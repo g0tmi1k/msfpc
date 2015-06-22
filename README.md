@@ -1,6 +1,29 @@
-![Metasploit Payload Creator (MPC)](https://i.imgur.com/KjlZjd9.png)
+A **quick** way to generate various "basic" Meterpreter payloads via msfvenom (part of the Metasploit framework).
+
+![Msfvenom Payload Creator (MPC)](https://i.imgur.com/KjlZjd9.png)
 
 - - -
+
+## About
+
+Msfvenom Payload Creator (MPC) is a wrapper to generate multiple types of payloads, based on users choice. The idea is to be as **simple as possible** (**only requiring one input**) to produce their payload.
+
+**Fully automating** Msfvenom & Metasploit is the end goal _(well as to be be able to automate MPC itself)_.
+The rest is to make the user's life as **easy as possible** (e.g. **IP selection menu**, **msfconsole resource file/commands** and a **quick web server** etc).
+
+The only necessary input from the user should be **defining the payload** they want by either the **platform** (e.g. `windows`), or the **file extension** they wish the payload to have (e.g. `exe`).
+
+_Note: This will **not** try to bypass any anti-virus solutions._
+
+## Install
+
+* Designed for **Kali Linux 1.1.0a+** & **Metasploit v4.11+** _(nothing else has been tested)_.
+
+```
+curl -k -L "https://raw.githubusercontent.com/g0tmi1k/mpc/master/mpc.sh" > /usr/bin/mpc
+chmod +x /usr/bin/mpc
+mpc
+```
 
 ## Help
 
@@ -23,7 +46,7 @@ root@kali:/var/www# bash /root/mpc.sh
 root@kali:/var/www#
 ```
 
-## Example \#1 (PHP - Automated)
+## Example \#1 (PHP - Fully Automated)
 
 ```bash
 root@kali:/var/www# bash /root/mpc.sh php 127.0.0.1
@@ -66,10 +89,10 @@ Saved as: /var/www/windows_meterpreter.exe
 root@kali:/var/www#
 ```
 
-## To-Do
+## To-Do List
 
 * Display interface name next to IP address (e.g. `2.) 192.168.155.175 [eth1]`)
 * Display file stats (e.g. file, size, md5/sha1) _Commands are in, just commented out._
-* Cleaner command line arguments (e.g. `-ip 127.0.0.`, `-v` etc)
-* Support different payloads (e.g. `standard shells`/`nc` & `reverse_http`/`reverse_https`)
+* Cleaner command line arguments (e.g. `-ip 127.0.0.1`, `-v` etc)
+* Support different payloads (e.g. `standard shells`/`nc` & `reverse_http`/`reverse_https`, `bind` etc)
 * x64 payloads
