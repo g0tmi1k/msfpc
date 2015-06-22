@@ -68,6 +68,8 @@ root@kali:/var/www#
 
 ## To-Do
 
-* Display interface name next to IP address
+* Display interface name next to IP address (e.g. `2.) 192.168.155.175 [eth1]`)
 * Display file stats (e.g. file, size, md5/sha1) _Commands are in, just commented out._
-* Cleaner command line arguments
+* Cleaner command line arguments (e.g. `-ip 127.0.0.`, `-v` etc)
+* Support different payloads (e.g. `standard shells`/`nc` & `reverse_http`/`reverse_https`)
+* x64 payloads
