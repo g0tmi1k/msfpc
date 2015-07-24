@@ -13,10 +13,10 @@ The rest is to make the user's life as **easy as possible** (e.g. **IP selection
 
 The only necessary input from the user should be **defining the payload** they want by either the **platform** (e.g. `windows`), or the **file extension** they wish the payload to have (e.g. `exe`).
 
-* Can't remember your IP for a interface? Don't sweat it, just use the interface name: `eth0`.
-* Don't know what your external IP is? MPC will discover it: `wan`.
-* Want to generate one of each payload? No issue! Try: `loop`.
-* Want to mass create payloads? Everything? Or to filter your select? ..Either way, its not a problem. Try: `batch` (for everything), `batch msf` (for every Meterpreter option), `batch staged` (for every staged payload), or `batch cmd stageless` (for every stageless command prompt)!
+* **Can't remember your IP for a interface? Don't sweat it, just use the interface name**: `eth0`.
+* **Don't know what your external IP is? MPC will discover it**: `wan`.
+* **Want to generate one of each payload? No issue!** Try: `loop`.
+* **Want to mass create payloads? Everything? Or to filter your select? ..Either way, its not a problem**. Try: `batch` (for everything), `batch msf` (for every Meterpreter option), `batch staged` (for every staged payload), or `batch cmd stageless` (for every stageless command prompt)!
 
 _Note: This will **not** try to bypass any anti-virus solutions._
 
@@ -32,7 +32,7 @@ mpc
 
 ## Help
 
-``` bash
+```
 root@kali:~# mpc -h -v
  [*] Msfvenom Payload Creator (MPC v1.3)
 

