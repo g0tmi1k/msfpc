@@ -1,6 +1,6 @@
 #!/bin/bash
 #-Metadata----------------------------------------------------#
-#  Filename: mpc.sh (v1.3.1)             (Update: 2015-07-24) #
+#  Filename: mpc.sh (v1.3.2)             (Update: 2015-08-17) #
 #-Info--------------------------------------------------------#
 #  Quickly generate Metasploit payloads using msfvenom.       #
 #-Author(s)---------------------------------------------------#
@@ -13,8 +13,6 @@
 #  Requires:                                                  #
 #    Metasploit Framework v4.11.3-2015062101 or higher        #
 #                             ---                             #
-#  Older Metasploit/msfvenom do not have '-o', so '>' instead #
-#                             ---                             #
 #  Useful Manual Commands:                                    #
 #    msfvenom --list payloads                                 #
 #    msfvenom --list encoders                                 #
@@ -25,6 +23,9 @@
 #    shell/bind_tcp - Staged (Requires Metasploit)            #
 #--Quick Install----------------------------------------------#
 #  curl -k -L "https://raw.githubusercontent.com/g0tmi1k/mpc/master/mpc.sh" > /usr/bin/mpc; chmod +x /usr/bin/mpc
+#-------------------------------------------------------------#
+
+
 #-More information--------------------------------------------#
 #   - https://www.offensive-security.com/metasploit-unleashed/payloads/
 #   - https://www.offensive-security.com/metasploit-unleashed/payload-types/
@@ -225,7 +226,7 @@ function doHelp {
 
 
 ## Banner
-echo -e " ${BLUE}[*]${RESET} ${BLUE}M${RESET}sfvenom ${BLUE}P${RESET}ayload ${BLUE}C${RESET}reator (${BLUE}MPC${RESET} v${BLUE}1.3.1${RESET})"
+echo -e " ${BLUE}[*]${RESET} ${BLUE}M${RESET}sfvenom ${BLUE}P${RESET}ayload ${BLUE}C${RESET}reator (${BLUE}MPC${RESET} v${BLUE}1.3.2${RESET})"
 
 
 ## Check system
@@ -263,7 +264,7 @@ fi
 ## Get default values (before batch/loop)
 [[ -z "${PORT}" ]] && PORT="443"
 IFACE=( $(\awk '/:/ {print $1}' /proc/net/dev | \sed 's_:__') )
-IPs=( $(\ifconfig | \grep 'inet addr:' | \cut -d':' -f2 | \cut -d' ' -f1) )        # OSX -> \ifconfig | \grep inet | \grep -E '([[:digit:]]{1,2}.){4}' | \sed -e 's_[:|addr|inet]__g; s_^[ \t]*__' | \awk '{print $1}'
+IPs=(); for (( i=0; i<${#IFACE[@]}; ++i )); do IPs+=( $(\ifconfig "${IFACE[${i}]}" | \grep 'inet addr:' | \cut -d':' -f2 | \cut -d' ' -f1) ); done    # OSX -> \ifconfig | \grep inet | \grep -E '([[:digit:]]{1,2}.){4}' | \sed -e 's_[:|addr|inet]__g; s_^[ \t]*__' | \awk '{print $1}'
 TYPEs=( asp  aspx  bash  java  linux    osx    perl  php  powershell python  tomcat  windows )   # Due to how its coded, this must always be a higher array count than ${FORMATs}
 FORMATs=(          sh    jsp   lin elf  macho  pl         ps1        py      war     win exe )
 
