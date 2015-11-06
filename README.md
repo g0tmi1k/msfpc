@@ -1,4 +1,4 @@
-A **quick** way to generate various "basic" Meterpreter payloads via msfvenom (part of the Metasploit framework).
+A **quick** way to generate various "basic" Meterpreter payloads via `msfvenom` (part of the Metasploit framework).
 
 ![Msfvenom Payload Creator (MPC)](https://i.imgur.com/JwSYBRZ.png)
 
@@ -18,7 +18,7 @@ The only necessary input from the user should be **defining the payload** they w
 * **Want to generate one of each payload? No issue!** Try: `loop`.
 * **Want to mass create payloads? Everything? Or to filter your select? ..Either way, its not a problem**. Try: `batch` (for everything), `batch msf` (for every Meterpreter option), `batch staged` (for every staged payload), or `batch cmd stageless` (for every stageless command prompt)!
 
-_Note: This will **not** try to bypass any anti-virus solutions._
+_Note: This will **not** try to bypass any anti-virus solutions in any modes._
 
 ## Install
 
