@@ -67,6 +67,7 @@ DOMAIN=false           # IP address or domain name?
 BATCH=false            # Are we creating multiple payloads (one of each type) ?
 LOOP=false             # Are we creating multiple payloads (every possible combination)?
 HELP=false             # Display the help screen?
+DARWIN=false           # In case of OSX users
 
 ##### (Optional) Enable debug mode?
 #set -x
@@ -230,10 +231,12 @@ echo -e " ${BLUE}[*]${RESET} ${BLUE}M${RESET}sfvenom ${BLUE}P${RESET}ayload ${BL
 
 
 ## Check system
-## Are we using Linux? (Sorry OSX users)
-if [[ "$(\uname)" != "Linux" ]]; then
-  echo -e " ${YELLOW}[i]${RESET} Something went wrong. ${RED}You're not using Linux${RESET}" >&2
+## Are we using Linux or OSX?
+# if [[ "$(\uname)" != "Linux" ]]; then
+if [[ "$(\uname)" != "Linux" ]] && [[ "$(\uname)" != "Darwin" ]] ; then
+  echo -e " ${YELLOW}[i]${RESET} Something went wrong. ${RED}You're not using Unix-like OS${RESET}" >&2
   exit 3
+elif [[ "$(\uname)" = "Darwin" ]] ; then DARWIN=true
 fi
 
 ## msfvenom installed?
@@ -263,8 +266,15 @@ fi
 
 ## Get default values (before batch/loop)
 [[ -z "${PORT}" ]] && PORT="443"
-IFACE=( $(\awk '/:/ {print $1}' /proc/net/dev | \sed 's_:__') )
-IPs=(); for (( i=0; i<${#IFACE[@]}; ++i )); do IPs+=( $(\ifconfig "${IFACE[${i}]}" | \grep 'inet addr:' | \cut -d':' -f2 | \cut -d' ' -f1) ); done    # OSX -> \ifconfig | \grep inet | \grep -E '([[:digit:]]{1,2}.){4}' | \sed -e 's_[:|addr|inet]__g; s_^[ \t]*__' | \awk '{print $1}'
+
+if [[ "$DARWIN" = "true" ]]; then 
+  IFACE=( $(for interface in $(ifconfig -l -u | tr ' ' '\n'); do if (ipconfig getifaddr $interface 1>/dev/null) ; then echo $interface ; fi ; done) )   # for OSX users
+  IPs=( $(for interface in $(ifconfig -l -u | tr ' ' '\n'); do ipconfig getifaddr $interface ; done) ) # for OSX
+else 
+  IFACE=( $(\awk '/:/ {print $1}' /proc/net/dev | \sed 's_:__') )
+  IPs=(); for (( i=0; i<${#IFACE[@]}; ++i )); do IPs+=( $(\ifconfig "${IFACE[${i}]}" | \grep 'inet addr:' | \cut -d':' -f2 | \cut -d' ' -f1) ); done    # OSX -> \ifconfig | \grep inet | \grep -E '([[:digit:]]{1,2}.){4}' | \sed -e 's_[:|addr|inet]__g; s_^[ \t]*__' | \awk '{print $1}'
+fi
+
 TYPEs=( asp  aspx  bash  java  linux    osx    perl  php  powershell python  tomcat  windows )   # Due to how its coded, this must always be a higher array count than ${FORMATs}
 FORMATs=(          sh    jsp   lin elf  macho  pl         ps1        py      war     win exe )
 
@@ -446,7 +456,12 @@ if [[ -n "${TYPE}" && -z "${IP}" ]]; then
   echo -e "\n ${YELLOW}[i]${RESET} Use which ${BLUE}interface${RESET}/${YELLOW}IP address${RESET}?:"
   I=0
   for iface in "${IFACE[@]}"; do
-    IPs[${I}]="$(\ifconfig ${iface} | \grep 'inet addr:' | \cut -d':' -f2 | \cut -d' ' -f1 | sort)"
+    
+    if [[ "$DARWIN" = "true" ]]; then                                                                         # for OSX users
+      IPs[${I}]="$(\ipconfig getifaddr ${iface} )"
+    else
+      IPs[${I}]="$(\ifconfig ${iface} | \grep 'inet addr:' | \cut -d':' -f2 | \cut -d' ' -f1 | sort)"
+    fi
     [[ -z "${IPs[${I}]}" ]] && IPs[${I}]="UNKNOWN"
     echo -e " ${YELLOW}[i]${RESET}   ${GREEN}$[${I}+1]${RESET}.) ${BLUE}${iface}${RESET} - ${YELLOW}${IPs[${I}]}${RESET}"
     I=$[${I}+1]
