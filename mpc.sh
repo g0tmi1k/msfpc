@@ -1,13 +1,13 @@
 #!/bin/bash
 #-Metadata----------------------------------------------------#
-#  Filename: mpc.sh (v1.4.1)             (Update: 2016-01-11) #
+#  Filename: mpc.sh (v1.4.2)             (Update: 2016-01-29) #
 #-Info--------------------------------------------------------#
 #  Quickly generate Metasploit payloads using msfvenom.       #
 #-Author(s)---------------------------------------------------#
 #  g0tmilk ~ https://blog.g0tmi1k.com/                        #
 #-Operating System--------------------------------------------#
-#  Designed for & tested on: Kali Linux 2 & Metasploit v4.11+ #
-#           Reported working: OSX 10.11 + & Kali 1.1          #
+#  Designed for & tested on: Kali Rolling & Metasploit v4.11+ #
+#          Reported working: OSX 10.11+ & Kali Linux 1.x / 2.x#
 #-Licence-----------------------------------------------------#
 #  MIT License ~ http://opensource.org/licenses/MIT           #
 #-Notes-------------------------------------------------------#
@@ -243,7 +243,7 @@ function doHelp {
 
 
 ## Banner
-echo -e " ${BLUE}[*]${RESET} ${BLUE}M${RESET}sfvenom ${BLUE}P${RESET}ayload ${BLUE}C${RESET}reator (${BLUE}MPC${RESET} v${BLUE}1.4.1${RESET})"
+echo -e " ${BLUE}[*]${RESET} ${BLUE}M${RESET}sfvenom ${BLUE}P${RESET}ayload ${BLUE}C${RESET}reator (${BLUE}MPC${RESET} v${BLUE}1.4.2${RESET})"
 
 
 ## Check system
@@ -474,11 +474,8 @@ if [[ -n "${TYPE}" && -z "${IP}" ]]; then
   echo -e "\n ${YELLOW}[i]${RESET} Use which ${BLUE}interface${RESET} - ${YELLOW}IP address${RESET}?:"
   I=0
   for iface in "${IFACE[@]}"; do
-    if [[ "$DARWIN" = "true" ]]; then    # OSX users
-      IPs[${I}]="$(\ifconfig "${iface}" | \grep inet | \grep -E '([[:digit:]]{1,2}.){4}' | \sed -e 's_[:|addr|inet]__g; s_^[ \t]*__' | \awk '{print $1}')"
-    else   # nix users
-      IPs[${I}]="$(\ifconfig "${iface}" | \grep 'inet addr:' | \cut -d':' -f2 | \cut -d' ' -f1)"
-    fi
+    IPs[${I}]="$(\ifconfig "${iface}" | \grep inet | \grep -E '([[:digit:]]{1,2}.){4}' | \sed -e 's_[:|addr|inet]__g; s_^[ \t]*__' | \awk '{print $1}')"
+    [[ -z "${IPs[${I}]}" ]] && IPs[${I}]="$(\ifconfig "${iface}" | \grep 'inet addr:' | \cut -d':' -f2 | \cut -d' ' -f1)"
     [[ -z "${IPs[${I}]}" ]] && IPs[${I}]="UNKNOWN"
     echo -e " ${YELLOW}[i]${RESET}   ${GREEN}$[${I}+1]${RESET}.) ${BLUE}${iface}${RESET} - ${YELLOW}${IPs[${I}]}${RESET}"
     I=$[${I}+1]
