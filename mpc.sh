@@ -1,13 +1,13 @@
 #!/bin/bash
 #-Metadata----------------------------------------------------#
-#  Filename: mpc.sh (v1.4.2)             (Update: 2016-01-29) #
+#  Filename: mpc.sh (v1.4.3)             (Update: 2016-06-30) #
 #-Info--------------------------------------------------------#
 #  Quickly generate Metasploit payloads using msfvenom.       #
 #-Author(s)---------------------------------------------------#
 #  g0tmilk ~ https://blog.g0tmi1k.com/                        #
 #-Operating System--------------------------------------------#
 #  Designed for & tested on: Kali Rolling & Metasploit v4.11+ #
-#          Reported working: OSX 10.11+ & Kali Linux 1.x / 2.x#
+#          Reported working: OSX 10.11+ & Kali Linux 1.x/2.x  #
 #-Licence-----------------------------------------------------#
 #  MIT License ~ http://opensource.org/licenses/MIT           #
 #-Notes-------------------------------------------------------#
@@ -243,7 +243,7 @@ function doHelp {
 
 
 ## Banner
-echo -e " ${BLUE}[*]${RESET} ${BLUE}M${RESET}sfvenom ${BLUE}P${RESET}ayload ${BLUE}C${RESET}reator (${BLUE}MPC${RESET} v${BLUE}1.4.2${RESET})"
+echo -e " ${BLUE}[*]${RESET} ${BLUE}M${RESET}sfvenom ${BLUE}P${RESET}ayload ${BLUE}C${RESET}reator (${BLUE}MPC${RESET} v${BLUE}1.4.3${RESET})"
 
 
 ## Check system
@@ -286,7 +286,7 @@ fi
 ## Get NIC information
 if [[ "$DARWIN" = "true" ]]; then   # OSX users
   IFACE=( $(for IFACE in $(\ifconfig -l -u | \tr ' ' '\n'); do if (\ifconfig ${IFACE} | \grep inet 1>/dev/null); then echo ${IFACE}; fi; done) )
-  IPs=(); for (( i=0; i<${#IFACE[@]}; ++i )); do IPs+=( $(\ifconfig "${IFACE[${i}]}" | \grep inet | \grep -E '([[:digit:]]{1,2}.){4}' | \sed -e 's_[:|addr|inet]__g; s_^[ \t]*__' | \awk '{print $1}') ); done
+  IPs=(); for (( i=0; i<${#IFACE[@]}; ++i )); do IPs+=( $(\ifconfig "${IFACE[${i}]}" | \grep 'inet ' | \grep -E '([[:digit:]]{1,2}.){4}' | \sed -e 's_[:|addr|inet]__g; s_^[ \t]*__' | \awk '{print $1}') ); done
 else    # nix users
   IFACE=( $(\awk '/:/ {print $1}' /proc/net/dev | \sed 's_:__') )
   IPs=(); for (( i=0; i<${#IFACE[@]}; ++i )); do IPs+=( $(\ip addr list "${IFACE[${i}]}" | \grep 'inet ' | \cut -d' ' -f6 | \cut -d '/' -f1) ); done
@@ -474,7 +474,7 @@ if [[ -n "${TYPE}" && -z "${IP}" ]]; then
   echo -e "\n ${YELLOW}[i]${RESET} Use which ${BLUE}interface${RESET} - ${YELLOW}IP address${RESET}?:"
   I=0
   for iface in "${IFACE[@]}"; do
-    IPs[${I}]="$(\ifconfig "${iface}" | \grep inet | \grep -E '([[:digit:]]{1,2}.){4}' | \sed -e 's_[:|addr|inet]__g; s_^[ \t]*__' | \awk '{print $1}')"
+    IPs[${I}]="$(\ifconfig "${iface}" | \grep 'inet ' | \grep -E '([[:digit:]]{1,2}.){4}' | \sed -e 's_[:|addr|inet]__g; s_^[ \t]*__' | \awk '{print $1}')"
     [[ -z "${IPs[${I}]}" ]] && IPs[${I}]="$(\ifconfig "${iface}" | \grep 'inet addr:' | \cut -d':' -f2 | \cut -d' ' -f1)"
     [[ -z "${IPs[${I}]}" ]] && IPs[${I}]="UNKNOWN"
     echo -e " ${YELLOW}[i]${RESET}   ${GREEN}$[${I}+1]${RESET}.) ${BLUE}${iface}${RESET} - ${YELLOW}${IPs[${I}]}${RESET}"
