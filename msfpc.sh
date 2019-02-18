@@ -1,6 +1,6 @@
 #!/bin/bash
 #-Metadata----------------------------------------------------#
-#  Filename: msfpc.sh (v1.4.4)           (Update: 2017-06-09) #
+#  Filename: msfpc.sh (v1.4.5)           (Update: 2019-02-18) #
 #-Info--------------------------------------------------------#
 #  Quickly generate Metasploit payloads using msfvenom.       #
 #-Author(s)---------------------------------------------------#
@@ -246,7 +246,7 @@ function doHelp {
 
 
 ## Banner
-echo -e " ${BLUE}[*]${RESET} ${BLUE}MSF${RESET}venom ${BLUE}P${RESET}ayload ${BLUE}C${RESET}reator (${BLUE}MSFPC${RESET} v${BLUE}1.4.4${RESET})"
+echo -e " ${BLUE}[*]${RESET} ${BLUE}MSF${RESET}venom ${BLUE}P${RESET}ayload ${BLUE}C${RESET}reator (${BLUE}MSFPC${RESET} v${BLUE}1.4.5${RESET})"
 
 
 ## Check system
