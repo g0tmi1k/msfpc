@@ -28,7 +28,7 @@
 #-------------------------------------------------------------#
 
 #--Quick Install----------------------------------------------#
-#  curl -k -L "https://raw.githubusercontent.com/g0tmi1k/mpc/master/msfpc.sh" > /usr/bin/msfpc; chmod +x /usr/bin/msfpc
+#  curl -k -L "https://raw.githubusercontent.com/g0tmi1k/msfpc/master/msfpc.sh" > /usr/bin/msfpc; chmod +x /usr/bin/msfpc
 #-------------------------------------------------------------#
 
 #-More information--------------------------------------------#
