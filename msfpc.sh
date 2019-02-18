@@ -297,7 +297,7 @@ fi
 
 ## Define TYPEs/FORMATs
 TYPEs=(  apk   asp  aspx  bash  java  linux    osx    perl  php  powershell python  tomcat  windows )   # Due to how its coded, this must always be a higher array count than ${FORMATs}
-FORMATs=(                 sh    jsp   lin elf  macho  pl         ps1        py      war     win exe srv dll )
+FORMATs=(                 sh    jsp   lin elf  macho  pl         ps1        py      war     win exe exe-service dll )
 
 
 ## Check user input
