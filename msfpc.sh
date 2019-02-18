@@ -234,7 +234,7 @@ function doHelp {
   [[ "${VERBOSE}" == "true" ]] && echo -e " By altering the traffic, such as <HTTP> and even more <HTTPS>, it will slow down the communication & increase the payload size."
   [[ "${VERBOSE}" == "true" ]] && echo -e " More information: https://community.rapid7.com/community/metasploit/blog/2011/06/29/meterpreter-httphttps-communication"
   echo ""
-  echo -e " <BATCH> will generate as many combinations as possible: <TYPE>, <CMD + MSF>, <BIND + REVERSE>, <STAGED + STAGLESS> & <TCP + HTTP + HTTPS + FIND_PORT> "
+  echo -e " <BATCH> will generate as many combinations as possible: <TYPE>, <CMD + MSF>, <BIND + REVERSE>, <STAGED + STAGELESS> & <TCP + HTTP + HTTPS + FIND_PORT> "
   echo -e " <LOOP> will just create one of each <TYPE>."
   echo ""
   echo -e " <VERBOSE> will display more information."
@@ -327,7 +327,7 @@ for x in $(\tr '[:upper:]' '[:lower:]' <<< "$@" ); do
   elif [[ "${x}" == "bind" || "${x}" ==  "listen" ]]; then DIRECTION="bind"                                                                   # Bind payload?
   elif [[ "${x}" == "reverse" || "${x}" == "rev" ]]; then DIRECTION="reverse"                                                                 # Reverse payload? (default)
   elif [[ "${x}" == "staged" || "${x}" == "stager" || "${x}" == "stage" || "${x}" == "small" ]]; then STAGE=true                              # Staged?
-  elif [[ "${x}" == "stage"*"less" || "${x}" == "single" || "${x}" == "inline" || "${x}" == "no"* || "${x}" == "full" ]]; then STAGE=false    # Stageless?
+  elif [[ "${x}" == "stag"*"less" || "${x}" == "single" || "${x}" == "inline" || "${x}" == "no"* || "${x}" == "full" ]]; then STAGE=false     # Stageless?
   elif [[ "${x}" == "https" || "${x}" == "ssl" || "${x}" == "tls" ]]; then METHOD="https"                                                     # HTTPS payload?
   elif [[ "${x}" == "http" || "${x}" == "www" ]]; then METHOD="http"                                                                          # HTTP payload?
   elif [[ "${x}" == "tcp" ]]; then METHOD="tcp"                                                                                               # TCP payload? (default)
