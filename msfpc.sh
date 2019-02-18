@@ -155,8 +155,7 @@ function doAction {
 
   cat <<EOF > "${FILEHANDLE}"
 #
-# [Kali 1]:   service postgresql start; service metasploit start; msfconsole -q -r '${FILEHANDLE}'
-# [Kali 2.x/Rolling]:   msfdb start; msfconsole -q -r '${FILEHANDLE}'
+# [Kali]: msfdb start; msfconsole -q -r '${FILEHANDLE}'
 #
 use exploit/multi/handler
 set PAYLOAD ${PAYLOAD}
