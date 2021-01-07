@@ -209,7 +209,7 @@ function doHelp {
   echo -e "   + ${YELLOW}Powershell${RESET} [.${YELLOW}ps1${RESET}]"
   echo -e "   + ${YELLOW}Python${RESET} [.${YELLOW}py${RESET}]"
   echo -e "   + ${YELLOW}Tomcat${RESET} [.${YELLOW}war${RESET}]"
-  echo -e "   + ${YELLOW}Windows${RESET} [.${YELLOW}exe${RESET} // .${YELLOW}exe${RESET} // .${YELLOW}dll${RESET}]"
+  echo -e "   + ${YELLOW}Windows${RESET} [.${YELLOW}exe${RESET} // .${YELLOW}exe-service${RESET} // .${YELLOW}dll${RESET}]"
   echo ""
   echo -e " Rather than putting <DOMAIN/IP>, you can do a interface and MSFPC will detect that IP address."
   echo -e " Missing <DOMAIN/IP> will default to the IP menu."
