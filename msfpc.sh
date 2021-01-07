@@ -870,7 +870,7 @@ fi
 
 ##### Done!
 if [[ "${SUCCESS}" == true ]]; then
-  echo -e " ${GREEN}[?]${RESET} ${GREEN}Quick web server${RESET} (for file transfer)?: python2 -m SimpleHTTPServer 8080"
+  echo -e " ${GREEN}[?]${RESET} ${GREEN}Quick web server${RESET} (for file transfer)?: python3 -m http.server 8080"
   echo -e " ${BLUE}[*]${RESET} ${BLUE}Done${RESET}!"
 else
   doHelp
